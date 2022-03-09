@@ -113,13 +113,24 @@
 import { ref, computed, reactive, nextTick } from 'vue'
 import { getAllResturant } from '@/api/restaurant'
 import { ElMessage } from 'element-plus'
-import { useRouter } from 'vue-router'
 import { addCategory } from '@/api/restaurant'
 const inputValue = ref('')
 const dynamicTags = ref(['Tag 1', 'Tag 2', 'Tag 3'])
 const inputVisible = ref(false)
 const InputRef = ref(null)
+const search = ref('')
+const state = reactive({
+  tableData: [],
+  expands: [], // 存储展开行的id
+  category: [], // 展开行的数据
+})
 
+// 给每行一个key,expend必需
+const getRowKeys = row => {
+  return row.id
+}
+
+// 实现手风琴效果,只能展开一行
 const expandCategory = (row, expandedRows) => {
   if (expandedRows.length > 0) {
     // 打开时关闭所有,然后记录当前打开的id
@@ -136,10 +147,13 @@ const expandCategory = (row, expandedRows) => {
     console.log(state.expands, state.category)
   }
 }
+
+// 删除分类
 const handleClose = tag => {
   dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1)
 }
 
+// 显示button -> 输入框
 const showInput = () => {
   inputVisible.value = true
   nextTick(() => {
@@ -147,22 +161,26 @@ const showInput = () => {
   })
 }
 
+// 添加分类
 const handleInputConfirm = () => {
   if (inputValue.value) {
     // dynamicTags.value.push(inputValue.value)
-    addCategory()
+    addCategory({
+      category_name: inputValue.value,
+      restaurant_id: state.expands[0],
+    })
+      .then(data => {
+        console.log(data)
+      })
+      .catch(e => {
+        console.log(e)
+      })
   }
   inputVisible.value = false
   inputValue.value = ''
 }
-const router = useRouter()
-const search = ref('')
-const state = reactive({
-  tableData: [],
-  expands: [],
-  category: [],
-})
 
+// 表格数据,具有搜索功能
 const filterTableData = computed(() =>
   state.tableData.filter(
     // 如果tableData不是响应式则监听不到数据变化
@@ -171,6 +189,7 @@ const filterTableData = computed(() =>
       data.name.toLowerCase().includes(search.value.toLowerCase())
   )
 )
+
 const handleEdit = (index, row) => {
   console.log(index, row)
 }
@@ -178,10 +197,7 @@ const handleDelete = (index, row) => {
   console.log(index, row)
 }
 
-const jumpToCategory = id => {
-  router.push(`/main/restaurantEdit?id=${id}`)
-}
-
+// 获取表格数据
 getAllResturant()
   .then(data => {
     if (data.status === 200) {
