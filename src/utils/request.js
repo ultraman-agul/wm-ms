@@ -45,7 +45,7 @@ service.interceptors.request.use(
   config => {
     const { authorization } = store.state.app
     if (authorization) {
-      config.headers.Authorization = `Bearer ${authorization.token}`
+      config.headers.Authorization = `Bearer ${authorization}`
     }
     return config
   },

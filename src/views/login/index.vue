@@ -13,10 +13,10 @@
   <div class="login">
     <el-form class="form" :model="model" :rules="rules" ref="loginForm">
       <h1 class="title">Vue3 Element Admin</h1>
-      <el-form-item prop="userName">
+      <el-form-item prop="username">
         <el-input
           class="text"
-          v-model="model.userName"
+          v-model="model.username"
           prefix-icon="el-icon-user-solid"
           clearable
           placeholder="用户名"
@@ -68,11 +68,11 @@ export default defineComponent({
     const route = useRoute()
     const state = reactive({
       model: {
-        userName: 'admin',
+        username: 'admin',
         password: '123456',
       },
       rules: {
-        userName: [
+        username: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
         ],
         password: [
@@ -95,14 +95,17 @@ export default defineComponent({
         state.loginForm.validate(async valid => {
           if (valid) {
             state.loading = true
-            const { code, data, message } = await Login(state.model)
-            if (+code === 200) {
+            const { status, token, success: message } = await Login(state.model)
+            const result = await Login(state.model)
+            console.log(result)
+            if (status === 200) {
               ctx.$message.success({
                 message: '登录成功',
                 duration: 1000,
               })
 
               const targetPath = decodeURIComponent(route.query.redirect)
+              console.log(targetPath)
               if (targetPath.startsWith('http')) {
                 // 如果是一个url地址
                 window.location.href = targetPath
@@ -113,7 +116,7 @@ export default defineComponent({
                 router.push('/')
               }
 
-              store.dispatch('app/setToken', data)
+              store.dispatch('app/setToken', token)
             } else {
               ctx.$message.error(message)
             }
