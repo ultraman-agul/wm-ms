@@ -1,6 +1,43 @@
 <template>
-  <el-table :data="filterTableData" style="width: 100%">
-    <el-table-column align="center" label="id" prop="id" />
+  <el-table
+    :data="filterTableData"
+    style="width: 100%"
+    @expand-change="expandCategory"
+    :row-key="getRowKeys"
+    :expand-row-keys="state.expands"
+  >
+    <el-table-column type="expand">
+      <template #default="props">
+        <el-tag
+          v-for="tag in dynamicTags"
+          :key="tag"
+          class="mx-1"
+          closable
+          :disable-transitions="false"
+          @close="handleClose(tag)"
+        >
+          {{ tag }}
+        </el-tag>
+        <el-input
+          v-if="inputVisible"
+          ref="InputRef"
+          v-model="inputValue"
+          class="ml-1 w-20"
+          size="small"
+          @keyup.enter="handleInputConfirm"
+          @blur="handleInputConfirm"
+        ></el-input>
+        <el-button
+          v-else
+          class="button-new-tag ml-1"
+          size="small"
+          @click="showInput"
+        >
+          + New Tag
+        </el-button>
+      </template>
+    </el-table-column>
+    <el-table-column align="center" label="id" prop="id" width="60" />
     <el-table-column align="center" label="名称" prop="name" />
     <el-table-column align="center" label="地址" prop="address" />
     <el-table-column align="center" label="联系电话" prop="call_center" />
@@ -17,32 +54,38 @@
     <el-table-column
       align="center"
       label="月销"
+      width="100"
       prop="month_sales"
     ></el-table-column>
     <el-table-column
       align="center"
       label="起送"
+      width="100"
       prop="min_price"
     ></el-table-column>
     <el-table-column
       align="center"
       label="配送费"
+      width="100"
       prop="shipping_fee"
     ></el-table-column>
     <el-table-column align="center" label="评分">
       <el-table-column
         align="center"
         label="店铺"
+        width="60"
         prop="wm_poi_score"
       ></el-table-column>
       <el-table-column
         align="center"
         label="食品"
+        width="60"
         prop="food_score"
       ></el-table-column>
       <el-table-column
         align="center"
         label="配送"
+        width="60"
         prop="delivery_score"
       ></el-table-column>
     </el-table-column>
@@ -52,14 +95,14 @@
       </template>
       <template #default="scope">
         <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
-          Edit
+          编辑
         </el-button>
         <el-button
           size="small"
           type="danger"
           @click="handleDelete(scope.$index, scope.row)"
         >
-          Delete
+          删除
         </el-button>
       </template>
     </el-table-column>
@@ -67,13 +110,57 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, computed, reactive, nextTick } from 'vue'
 import { getAllResturant } from '@/api/restaurant'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
+import { addCategory } from '@/api/restaurant'
+const inputValue = ref('')
+const dynamicTags = ref(['Tag 1', 'Tag 2', 'Tag 3'])
+const inputVisible = ref(false)
+const InputRef = ref(null)
 
+const expandCategory = (row, expandedRows) => {
+  if (expandedRows.length > 0) {
+    // 打开时关闭所有,然后记录当前打开的id
+    state.expands = []
+    state.expands.push(row.id)
+    state.category = []
+    // 根据id找到当前行,获取信息
+    for (let i = 0; i < state.tableData.length; i++) {
+      if (state.tableData[i].id == row.id) {
+        state.category.push(state.tableData[i])
+        break
+      }
+    }
+    console.log(state.expands, state.category)
+  }
+}
+const handleClose = tag => {
+  dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1)
+}
+
+const showInput = () => {
+  inputVisible.value = true
+  nextTick(() => {
+    InputRef.value.focus()
+  })
+}
+
+const handleInputConfirm = () => {
+  if (inputValue.value) {
+    // dynamicTags.value.push(inputValue.value)
+    addCategory()
+  }
+  inputVisible.value = false
+  inputValue.value = ''
+}
+const router = useRouter()
 const search = ref('')
 const state = reactive({
   tableData: [],
+  expands: [],
+  category: [],
 })
 
 const filterTableData = computed(() =>
@@ -89,6 +176,10 @@ const handleEdit = (index, row) => {
 }
 const handleDelete = (index, row) => {
   console.log(index, row)
+}
+
+const jumpToCategory = id => {
+  router.push(`/main/restaurantEdit?id=${id}`)
 }
 
 getAllResturant()
