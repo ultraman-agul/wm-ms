@@ -1,6 +1,6 @@
 const Layout = () => import('@/layout/index.vue')
 const User = () => import('@/views/main/User.vue')
-
+const Restaurant = () => import('@/views/main/Restaurant.vue')
 export default [
   {
     path: '/main',
@@ -17,6 +17,14 @@ export default [
         component: User,
         meta: {
           title: '用户管理',
+        },
+      },
+      {
+        path: '/restaurant',
+        name: 'Restaurant',
+        component: Restaurant,
+        meta: {
+          title: '餐厅管理',
         },
       },
       //   {
