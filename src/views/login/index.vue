@@ -55,7 +55,7 @@ import {
   ref,
   computed,
 } from 'vue'
-import { Login } from '@/api/login'
+import { userLogin } from '@/api/user'
 import { useStore } from 'vuex'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -95,9 +95,9 @@ export default defineComponent({
         state.loginForm.validate(async valid => {
           if (valid) {
             state.loading = true
-            const { status, token, success: message } = await Login(state.model)
-            const result = await Login(state.model)
-            console.log(result)
+            const { status, token, success: message } = await userLogin(
+              state.model
+            )
             if (status === 200) {
               ctx.$message.success({
                 message: '登录成功',

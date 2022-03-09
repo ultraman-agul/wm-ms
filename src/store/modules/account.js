@@ -9,7 +9,7 @@
  * @Github: https://github.com/huzhushan/vue3-element-admin
  * @Donate: https://huzhushan.gitee.io/vue3-element-admin/donate/
  */
-import { GetUserinfo } from '@/api/login'
+import { userInfo } from '@/api/user'
 
 export default {
   namespaced: true,
@@ -30,7 +30,7 @@ export default {
   actions: {
     // 获取用户信息
     async getUserinfo({ commit }) {
-      const { status: code, data } = await GetUserinfo()
+      const { status: code, data } = await userInfo()
       if (+code === 200) {
         commit('setUserinfo', data)
         return Promise.resolve(data)
