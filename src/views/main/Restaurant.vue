@@ -8,33 +8,36 @@
   >
     <el-table-column type="expand">
       <template #default="props">
-        <el-tag
-          v-for="tag in dynamicTags"
-          :key="tag"
-          class="mx-1"
-          closable
-          :disable-transitions="false"
-          @close="handleClose(tag)"
-        >
-          {{ tag }}
-        </el-tag>
-        <el-input
-          v-if="inputVisible"
-          ref="InputRef"
-          v-model="inputValue"
-          class="ml-1 w-20"
-          size="small"
-          @keyup.enter="handleInputConfirm"
-          @blur="handleInputConfirm"
-        ></el-input>
-        <el-button
-          v-else
-          class="button-new-tag ml-1"
-          size="small"
-          @click="showInput"
-        >
-          + New Tag
-        </el-button>
+        <div class="category">
+          <span>食品分类:</span>
+          <el-tag
+            v-for="tag in state.category"
+            :key="tag.id"
+            class="mx-1"
+            closable
+            :disable-transitions="false"
+            @close="handleClose(tag)"
+          >
+            {{ tag.name }}
+          </el-tag>
+          <el-input
+            v-if="inputVisible"
+            ref="InputRef"
+            v-model="inputValue"
+            class="ml-1 w-20"
+            size="small"
+            @keyup.enter="handleInputConfirm"
+            @blur="handleInputConfirm"
+          ></el-input>
+          <el-button
+            v-else
+            class="button-new-tag ml-1"
+            size="small"
+            @click="showInput"
+          >
+            + 添加分类
+          </el-button>
+        </div>
       </template>
     </el-table-column>
     <el-table-column align="center" label="id" prop="id" width="60" />
@@ -111,18 +114,22 @@
 
 <script setup>
 import { ref, computed, reactive, nextTick } from 'vue'
-import { getAllResturant } from '@/api/restaurant'
 import { ElMessage } from 'element-plus'
-import { addCategory } from '@/api/restaurant'
+import {
+  addCategory,
+  getCategory,
+  allRestaurantNoLoc,
+  deleteCategory,
+} from '@/api/restaurant'
 const inputValue = ref('')
-const dynamicTags = ref(['Tag 1', 'Tag 2', 'Tag 3'])
+// const dynamicTags = ref(['Tag 1', 'Tag 2', 'Tag 3'])
 const inputVisible = ref(false)
 const InputRef = ref(null)
 const search = ref('')
 const state = reactive({
   tableData: [],
   expands: [], // 存储展开行的id
-  category: [], // 展开行的数据
+  category: [], // 展开行的餐厅的分类数据
 })
 
 // 给每行一个key,expend必需
@@ -136,21 +143,33 @@ const expandCategory = (row, expandedRows) => {
     // 打开时关闭所有,然后记录当前打开的id
     state.expands = []
     state.expands.push(row.id)
-    state.category = []
-    // 根据id找到当前行,获取信息
-    for (let i = 0; i < state.tableData.length; i++) {
-      if (state.tableData[i].id == row.id) {
-        state.category.push(state.tableData[i])
-        break
-      }
-    }
-    console.log(state.expands, state.category)
+    getCategoryFn(row.id)
   }
+}
+
+const getCategoryFn = id => {
+  getCategory({ restaurant_id: id })
+    .then(data => {
+      if (data.status === 200) {
+        state.category = data.data
+      } else {
+        ElMessage.error(data.message)
+      }
+    })
+    .catch(e => {
+      console.log(e)
+    })
 }
 
 // 删除分类
 const handleClose = tag => {
-  dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1)
+  deleteCategory({ category_id: tag.id }).then(data => {
+    if (data.status === 200) {
+      getCategoryFn(state.expands[0])
+    } else {
+      ElMessage.error(data.message)
+    }
+  })
 }
 
 // 显示button -> 输入框
@@ -164,7 +183,6 @@ const showInput = () => {
 // 添加分类
 const handleInputConfirm = () => {
   if (inputValue.value) {
-    // dynamicTags.value.push(inputValue.value)
     addCategory({
       category_name: inputValue.value,
       restaurant_id: state.expands[0],
@@ -193,12 +211,13 @@ const filterTableData = computed(() =>
 const handleEdit = (index, row) => {
   console.log(index, row)
 }
+
 const handleDelete = (index, row) => {
   console.log(index, row)
 }
 
 // 获取表格数据
-getAllResturant()
+allRestaurantNoLoc()
   .then(data => {
     if (data.status === 200) {
       state.tableData = data.data
@@ -208,3 +227,14 @@ getAllResturant()
     ElMessage.error(e)
   })
 </script>
+
+<style lang="scss" scoped>
+.category {
+  span {
+    margin-right: 20px;
+  }
+  .el-tag {
+    margin: 0 20px;
+  }
+}
+</style>
