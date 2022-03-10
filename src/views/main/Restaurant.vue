@@ -193,6 +193,8 @@ const handleDelete = (index, row) => {
 
 // 跳转到食品详情
 const jumpToFood = id => {
+  store.dispatch('restaurant/getCategoryFn', id)
+
   router.push('/main/food?id=' + id)
 }
 </script>
