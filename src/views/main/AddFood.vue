@@ -32,7 +32,7 @@
         <el-input v-model="ruleForm.description" type="textarea"></el-input>
       </el-form-item>
       <el-form-item label="商品图片地址" prop="pic_url">
-        <el-input v-model="ruleForm.pic_url"></el-input>
+        <input type="file" @change="upload($event)" />
       </el-form-item>
       <el-form-item label="单价" prop="price">
         <el-input v-model="ruleForm.price"></el-input>
@@ -57,6 +57,9 @@
 import { reactive, ref, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRoute } from 'vue-router'
+import { ElMessage } from 'element-plus'
+import { uploadFoodPic } from '@/api/upload'
+import config from '@/config'
 const route = useRoute()
 const restaurant_id = route.query.id
 const store = useStore()
@@ -119,6 +122,22 @@ const rules = reactive({
   ],
 })
 
+const upload = event => {
+  const file = event.target.files[0]
+  if (!file || file.size > 1024 * 1024 * 2) {
+    ElMessage.error('图片不能大于2M')
+    return
+  }
+  uploadFoodPic({ file })
+    .then(data => {
+      if (data.status === 200) {
+        ruleForm.pic_url = config.baseURL + data.url
+      }
+    })
+    .catch(e => {
+      ElMessage.error('图片上传失败')
+    })
+}
 const submitForm = formEl => {
   if (!formEl) return
   formEl.validate(valid => {
