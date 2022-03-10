@@ -1,10 +1,10 @@
 <template>
   <el-table :data="filterTableData" style="width: 100%">
-    <el-table-column align="center" label="id" prop="id" />
-    <el-table-column align="center" label="名称" prop="name" />
+    <el-table-column label="Date" prop="date" />
+    <el-table-column label="Name" prop="name" />
     <el-table-column align="right">
       <template #header>
-        <el-input v-model="search" size="small" placeholder="搜索" />
+        <el-input v-model="search" size="small" placeholder="Type to search" />
       </template>
       <template #default="scope">
         <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
@@ -20,21 +20,28 @@
       </template>
     </el-table-column>
   </el-table>
+
+  <el-button @click="addItem">添加</el-button>
 </template>
 
 <script setup>
 import { ref, computed, reactive } from 'vue'
-import { getAllResturant } from '@/api/restaurant'
-import { ElMessage } from 'element-plus'
-
+import { useRoute, useRouter } from 'vue-router'
+const route = useRoute()
+const router = useRouter()
+const { id } = route.query
 const search = ref('')
 const state = reactive({
-  tableData: [],
+  tableData: [
+    {
+      date: '2016-05-03',
+      name: 'Tom',
+      address: 'No. 189, Grove St, Los Angeles',
+    },
+  ],
 })
-
 const filterTableData = computed(() =>
   state.tableData.filter(
-    // 如果tableData不是响应式则监听不到数据变化
     data =>
       !search.value ||
       data.name.toLowerCase().includes(search.value.toLowerCase())
@@ -46,14 +53,9 @@ const handleEdit = (index, row) => {
 const handleDelete = (index, row) => {
   console.log(index, row)
 }
+console.log(id)
 
-getAllResturant()
-  .then(data => {
-    if (data.status === 200) {
-      state.tableData = data.data
-    }
-  })
-  .catch(e => {
-    ElMessage.error(e)
-  })
+const addItem = () => {
+  router.push('/main/addFood?id=' + id)
+}
 </script>

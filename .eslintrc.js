@@ -56,7 +56,7 @@ module.exports = {
         args: 'none',
       },
     ],
-    'vue/no-unused-vars': 'warn',
+    'vue/no-unused-vars': 'off',
     'no-prototype-builtins': 'off',
     'no-irregular-whitespace': 'off',
     'space-before-function-paren': 'off',

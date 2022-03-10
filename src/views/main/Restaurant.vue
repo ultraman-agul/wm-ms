@@ -11,7 +11,7 @@
         <div class="category">
           <span>食品分类:</span>
           <el-tag
-            v-for="tag in state.category"
+            v-for="tag in category"
             :key="tag.id"
             class="mx-1"
             closable
@@ -92,11 +92,14 @@
         prop="delivery_score"
       ></el-table-column>
     </el-table-column>
-    <el-table-column align="right">
+    <el-table-column align="center" width="400">
       <template #header>
         <el-input v-model="search" size="small" placeholder="搜索" />
       </template>
       <template #default="scope">
+        <el-button size="small" @click="jumpToFood(scope.row.id)">
+          食品详情
+        </el-button>
         <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
           编辑
         </el-button>
@@ -114,61 +117,39 @@
 
 <script setup>
 import { ref, computed, reactive, nextTick } from 'vue'
-import { ElMessage } from 'element-plus'
-import {
-  addCategory,
-  getCategory,
-  allRestaurantNoLoc,
-  deleteCategory,
-} from '@/api/restaurant'
+import router from '@/router'
+import { useStore } from 'vuex'
+const store = useStore()
 const inputValue = ref('')
-// const dynamicTags = ref(['Tag 1', 'Tag 2', 'Tag 3'])
 const inputVisible = ref(false)
 const InputRef = ref(null)
 const search = ref('')
 const state = reactive({
-  tableData: [],
-  expands: [], // 存储展开行的id
-  category: [], // 展开行的餐厅的分类数据
+  expands: [], // 存储展开行的餐馆id
 })
 
+const category = computed(() => store.state.restaurant.category) // 展开行的餐厅的分类数据
+const tableData = computed(() => store.state.restaurant.restaurantList) // 表格餐厅列表数据
 // 给每行一个key,expend必需
 const getRowKeys = row => {
   return row.id
 }
-
+store.dispatch('restaurant/allRestaurantNoLoc') // 获取数据
 // 实现手风琴效果,只能展开一行
 const expandCategory = (row, expandedRows) => {
   if (expandedRows.length > 0) {
     // 打开时关闭所有,然后记录当前打开的id
     state.expands = []
     state.expands.push(row.id)
-    getCategoryFn(row.id)
+    store.dispatch('restaurant/getCategoryFn', row.id)
   }
-}
-
-const getCategoryFn = id => {
-  getCategory({ restaurant_id: id })
-    .then(data => {
-      if (data.status === 200) {
-        state.category = data.data
-      } else {
-        ElMessage.error(data.message)
-      }
-    })
-    .catch(e => {
-      console.log(e)
-    })
 }
 
 // 删除分类
 const handleClose = tag => {
-  deleteCategory({ category_id: tag.id }).then(data => {
-    if (data.status === 200) {
-      getCategoryFn(state.expands[0])
-    } else {
-      ElMessage.error(data.message)
-    }
+  store.dispatch('restaurant/deleteCategory', {
+    category_id: tag.id,
+    restaurant_id: state.expands[0],
   })
 }
 
@@ -183,16 +164,10 @@ const showInput = () => {
 // 添加分类
 const handleInputConfirm = () => {
   if (inputValue.value) {
-    addCategory({
+    store.dispatch('restaurant/addCategory', {
       category_name: inputValue.value,
       restaurant_id: state.expands[0],
     })
-      .then(data => {
-        console.log(data)
-      })
-      .catch(e => {
-        console.log(e)
-      })
   }
   inputVisible.value = false
   inputValue.value = ''
@@ -200,7 +175,7 @@ const handleInputConfirm = () => {
 
 // 表格数据,具有搜索功能
 const filterTableData = computed(() =>
-  state.tableData.filter(
+  tableData.value.filter(
     // 如果tableData不是响应式则监听不到数据变化
     data =>
       !search.value ||
@@ -216,16 +191,10 @@ const handleDelete = (index, row) => {
   console.log(index, row)
 }
 
-// 获取表格数据
-allRestaurantNoLoc()
-  .then(data => {
-    if (data.status === 200) {
-      state.tableData = data.data
-    }
-  })
-  .catch(e => {
-    ElMessage.error(e)
-  })
+// 跳转到食品详情
+const jumpToFood = id => {
+  router.push('/main/food?id=' + id)
+}
 </script>
 
 <style lang="scss" scoped>

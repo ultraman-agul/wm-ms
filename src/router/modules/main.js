@@ -1,7 +1,9 @@
 const Layout = () => import('@/layout/index.vue')
 const User = () => import('@/views/main/User.vue')
 const Restaurant = () => import('@/views/main/Restaurant.vue')
-const Category = () => import('@/views/main/Category.vue')
+const Food = () => import('@/views/main/Food.vue')
+const AddFood = () => import('@/views/main/AddFood.vue')
+
 export default [
   {
     path: '/main',
@@ -29,11 +31,20 @@ export default [
         },
       },
       {
-        path: 'restaurantEdit',
-        name: 'RestaurantEdit',
-        component: Category,
+        path: 'food',
+        name: 'Food',
+        component: Food,
         meta: {
-          title: '分类编辑',
+          title: '食品列表',
+        },
+        hidden: true, // 不在菜单中显示
+      },
+      {
+        path: 'addFood',
+        name: 'addFood',
+        component: AddFood,
+        meta: {
+          title: '添加食品',
         },
         hidden: true, // 不在菜单中显示
       },
