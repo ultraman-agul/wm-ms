@@ -3,7 +3,7 @@ const User = () => import('@/views/main/User.vue')
 const Restaurant = () => import('@/views/main/Restaurant.vue')
 const Food = () => import('@/views/main/Food.vue')
 const AddFood = () => import('@/views/main/AddFood.vue')
-
+const Order = () => import('@/views/main/Order.vue')
 export default [
   {
     path: '/main',
@@ -47,6 +47,14 @@ export default [
           title: '添加食品',
         },
         hidden: true, // 不在菜单中显示
+      },
+      {
+        path: 'order',
+        name: 'Order',
+        component: Order,
+        meta: {
+          title: '订单管理',
+        },
       },
       //   {
       //     path: '/category',

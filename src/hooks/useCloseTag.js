@@ -1,39 +1,3 @@
-/*
- *
- * 　　┏┓　　　┏┓+ +
- * 　┏┛┻━━━┛┻┓ + +
- * 　┃　　　　　　　┃
- * 　┃　　　━　　　┃ ++ + + +
- *  ████━████ ┃+
- * 　┃　　　　　　　┃ +
- * 　┃　　　┻　　　┃
- * 　┃　　　　　　　┃ + +
- * 　┗━┓　　　┏━┛
- * 　　　┃　　　┃
- * 　　　┃　　　┃ + + + +
- * 　　　┃　　　┃
- * 　　　┃　　　┃ +  神兽保佑
- * 　　　┃　　　┃    代码无bug
- * 　　　┃　　　┃　　+
- * 　　　┃　 　　┗━━━┓ + +
- * 　　　┃ 　　　　　　　┣┓
- * 　　　┃ 　　　　　　　┏┛
- * 　　　┗┓┓┏━┳┓┏┛ + + + +
- * 　　　　┃┫┫　┃┫┫
- * 　　　　┗┻┛　┗┻┛+ + + +
- *
- *
- * @Descripttion:
- * @version:
- * @Date: 2021-08-20 11:15:27
- * @LastEditors: huzhushan@126.com
- * @LastEditTime: 2021-09-18 17:25:32
- * @Author: huzhushan@126.com
- * @HomePage: https://huzhushan.gitee.io/vue3-element-admin
- * @Github: https://github.com/huzhushan/vue3-element-admin
- * @Donate: https://huzhushan.gitee.io/vue3-element-admin/donate/
- */
-
 import { reactive, toRefs, getCurrentInstance } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
