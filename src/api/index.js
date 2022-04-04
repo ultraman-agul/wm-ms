@@ -13,7 +13,7 @@ const axios = axioss.create({
 axios.interceptors.request.use(config => {
   config.headers = {
     // 请求头带上token，用于后端验证
-    Authorization: 'Bearer ' + localStorage.getItem('VEA-TOKEN'),
+    Authorization: 'Bearer ' + localStorage.getItem('AGUL-TOKEN'),
   }
   return config
 })
@@ -22,7 +22,7 @@ axios.interceptors.response.use(
     if (res.data.status === 403) {
       // token身份验证不通过,跳转登录页,删除token
       router.push('/login')
-      localStorage.removeItem('VEA-TOKEN')
+      localStorage.removeItem('AGUL-TOKEN')
     }
     return res.data
   },

@@ -1,6 +1,6 @@
 import { ElLoading } from 'element-plus'
-// import router, { asyncRoutes } from '@/router'
-import router from '@/router'
+import router, { asyncRoutes } from '@/router'
+// import router from '@/router'
 import store from '@/store'
 import { TOKEN } from '@/store/modules/app' // TOKEN变量名
 
@@ -49,12 +49,13 @@ router.beforeEach(async to => {
       }
 
       // 删除所有动态路由
-      // asyncRoutes.forEach(item => {
-      //   router.removeRoute(item.name)
-      // })
-      // return to.fullPath
+      asyncRoutes.forEach(item => {
+        router.removeRoute(item.name)
+      })
+      return to.fullPath
     }
 
+    console.log(store.state.menu.menus.length)
     // 生成菜单（如果你的项目有动态菜单，在此处会添加动态路由）
     if (store.state.menu.menus.length <= 0) {
       const loadingInstance = ElLoading.service({

@@ -1,16 +1,6 @@
-/*
- * @Descripttion:
- * @version:
- * @Date: 2021-04-20 11:06:21
- * @LastEditors: huzhushan@126.com
- * @LastEditTime: 2021-07-26 18:22:01
- * @Author: huzhushan@126.com
- * @HomePage: https://huzhushan.gitee.io/vue3-element-admin
- * @Github: https://github.com/huzhushan/vue3-element-admin
- * @Donate: https://huzhushan.gitee.io/vue3-element-admin/donate/
- */
-import { fixedRoutes, asyncRoutes } from '@/router'
-// import { GetMenus } from '@/api/menu'
+import main from '@/router/modules/admin'
+import admin from '@/router/modules/test'
+import router, { fixedRoutes, asyncRoutes } from '@/router'
 // import router from '@/router'
 
 // const hasPermission = (role, route) => {
@@ -51,6 +41,7 @@ const generateUrl = (path, parentPath) => {
 //   return filterRoutes
 // }
 
+// 生成左边导航栏
 const getFilterMenus = (arr, parentPath = '') => {
   const menus = []
 
@@ -93,21 +84,25 @@ export default {
 
       // 方式二：有动态菜单
       // 从后台获取菜单
-      // const { code, data } = await GetMenus({ role: userinfo.role })
 
-      // if (+code === 200) {
-      //   // 过滤出需要添加的动态路由
-      //   const filterRoutes = getFilterRoutes(asyncRoutes, data)
-      //   filterRoutes.forEach(route => router.addRoute(route))
-
-      //   // 生成菜单
-      //   const menus = getFilterMenus([...fixedRoutes, ...filterRoutes])
-      //   commit('SET_MENUS', menus)
-      // }
+      let filterRoutes
+      console.log(userinfo)
+      if (userinfo.status === 3) {
+        // 超级管理员
+        // 过滤出需要添加的动态路由
+        filterRoutes = asyncRoutes.concat(admin)
+      } else {
+        filterRoutes = asyncRoutes.concat(main)
+      }
+      filterRoutes.forEach(route => router.addRoute(route))
 
       // 生成菜单
-      const menus = getFilterMenus([...fixedRoutes, ...asyncRoutes])
+      const menus = getFilterMenus([...fixedRoutes, ...filterRoutes])
       commit('SET_MENUS', menus)
+
+      // 生成菜单
+      // const menus = getFilterMenus([...fixedRoutes, ...asyncRoutes])
+      // commit('SET_MENUS', menus)
     },
   },
 }

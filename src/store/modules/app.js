@@ -12,13 +12,13 @@
 import { getItem, setItem, removeItem } from '@/utils/storage' //getItem和setItem是封装的操作localStorage的方法
 import { AesEncryption } from '@/utils/encrypt'
 import { toRaw } from 'vue'
-export const TOKEN = 'VEA-TOKEN'
-const COLLAPSE = 'VEA-COLLAPSE'
+export const TOKEN = 'AGUL-TOKEN'
+const COLLAPSE = 'AGUL-COLLAPSE'
 
 export default {
   namespaced: true,
   state: {
-    title: 'Vue3 Element Admin',
+    title: 'AGUL ADMIN',
     authorization: getItem(TOKEN),
     sidebar: {
       collapse: getItem(COLLAPSE),
