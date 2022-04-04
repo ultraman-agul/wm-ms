@@ -45,3 +45,26 @@ export const deleteCategory = data => {
   }
   return _post(req)
 }
+
+export const getHasShop = () => {
+  const req = {
+    url: 'v1/hasShop',
+  }
+  return _get(req)
+}
+
+export const locationSearch = data => {
+  const req = {
+    url: 'v1/location_search',
+    data,
+  }
+  return _get(req)
+}
+
+export const createShop = data => {
+  const req = {
+    url: 'v1/createShop',
+    data,
+  }
+  return _post(req)
+}

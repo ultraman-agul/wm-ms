@@ -1,5 +1,5 @@
-import main from '@/router/modules/admin'
-import admin from '@/router/modules/test'
+import main from '@/router/modules/main'
+import admin from '@/router/modules/admin'
 import router, { fixedRoutes, asyncRoutes } from '@/router'
 // import router from '@/router'
 
@@ -93,11 +93,14 @@ export default {
         filterRoutes = asyncRoutes.concat(admin)
       } else {
         filterRoutes = asyncRoutes.concat(main)
+        console.log(filterRoutes)
       }
+
       filterRoutes.forEach(route => router.addRoute(route))
 
       // 生成菜单
       const menus = getFilterMenus([...fixedRoutes, ...filterRoutes])
+      console.log(menus)
       commit('SET_MENUS', menus)
 
       // 生成菜单

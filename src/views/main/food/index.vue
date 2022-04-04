@@ -1,5 +1,6 @@
 <template>
   <div>
+    abc
     <router-view></router-view>
   </div>
 </template>
