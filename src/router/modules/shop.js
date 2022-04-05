@@ -22,6 +22,12 @@ export default [
         meta: { title: '店铺信息' },
         component: () => import('@/views/main/shop/info/info.vue'),
       },
+      {
+        path: 'sales',
+        name: 'sales',
+        meta: { title: '销售图表' },
+        component: () => import('@/views/main/shop/sales/sales.vue'),
+      },
     ],
   },
 ]
