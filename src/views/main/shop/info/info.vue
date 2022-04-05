@@ -4,7 +4,7 @@
       <el-descriptions class="margin-top" title="我的店铺" :column="1" border>
         <template v-slot:extra>
           <!-- 抽屉组件 -->
-          <!-- <drawer-form :usable="shopInfo.usable"></drawer-form> -->
+          <info-form @hasUpdate="getShopInfo"></info-form>
         </template>
 
         <el-descriptions-item>
@@ -140,11 +140,15 @@
 </template>
 
 <script>
-// import drawerForm from './drawerForm.vue'
+import infoForm from './infoForm.vue'
 import { getShopInfo, updateActivities } from '@/api/restaurant'
 import { defineComponent, reactive, toRefs, getCurrentInstance, ref } from 'vue'
+import { useStore } from 'vuex'
+
 export default defineComponent({
+  components: { infoForm },
   setup() {
+    const store = useStore()
     const { proxy: ctx } = getCurrentInstance()
     const state = reactive({
       shopInfo: {},
@@ -162,6 +166,7 @@ export default defineComponent({
           .then(res => {
             if (res.status === 200) {
               state.shopInfo = res.data
+              store.dispatch('restaurant/setShopInfo', res.data)
               state.newActivities = res.data.discounts2
               // ctx.$message({
               //   type: 'success',

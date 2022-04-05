@@ -83,3 +83,11 @@ export const updateActivities = data => {
   }
   return _get(req)
 }
+
+export const updateShop = data => {
+  const req = {
+    url: 'v1/updateShop',
+    data,
+  }
+  return _post(req)
+}

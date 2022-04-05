@@ -10,8 +10,12 @@ export default {
     restaurant_id: '',
     category: [],
     restaurantList: [],
+    shopInfo: {},
   },
   mutations: {
+    setShopInfo(state, data) {
+      state.shopInfo = data
+    },
     setRestaurantId(state, data) {
       state.restaurant_id = data
     },
@@ -71,6 +75,10 @@ export default {
           console.error(res.message)
         }
       })
+    },
+
+    setShopInfo({ commit }, data) {
+      commit('setShopInfo', data)
     },
   },
 }

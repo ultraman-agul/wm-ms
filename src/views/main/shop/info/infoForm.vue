@@ -1,6 +1,14 @@
 <template>
-  <div class="main-content">
-    <div class="add-shop">
+  <div class="drawer-form">
+    <el-button type="primary" size="small" @click="handleDrawer">
+      修改基本信息
+    </el-button>
+    <el-drawer
+      title="店铺信息修改"
+      v-model="drawer"
+      :before-close="handleClose"
+    >
+      <!-- 表单信息 -->
       <el-form
         :model="shopInfo"
         :rules="rules"
@@ -65,31 +73,23 @@
             <el-time-select
               placeholder="起始时间"
               v-model="shopInfo.shopping_time_start"
-              :picker-options="{
-                start: '06:00',
-                step: '00:30',
-                end: '24:00',
-              }"
+              start="08:00"
+              step="00:30"
+              end="24:00"
             ></el-time-select>
           </el-form-item>
           <el-form-item prop="shopping_time_end">
             <el-time-select
               placeholder="结束时间"
               v-model="shopInfo.shopping_time_end"
-              :picker-options="{
-                start: '06:00',
-                step: '00:30',
-                end: '24:00',
-              }"
+              start="08:00"
+              step="00:30"
+              end="24:00"
             ></el-time-select>
           </el-form-item>
         </el-form-item>
         <!-- 店铺头像图片 -->
-        <el-form-item
-          label="店铺头像"
-          prop="shop_avatar"
-          :required="shop_avatar"
-        >
+        <el-form-item label="店铺头像" prop="shop_avatar">
           <el-upload
             action="#"
             ref="avatar"
@@ -100,18 +100,13 @@
             :auto-upload="false"
             :limit="1"
           >
-            <i class="el-icon-plus"></i>
+            <img
+              v-if="shopInfo.pic_url"
+              :src="shopInfo.pic_url"
+              style="width: 100%;"
+            />
+            <i v-else class="el-icon-plus"></i>
           </el-upload>
-        </el-form-item>
-
-        <!-- 商家服务 -->
-        <el-form-item label="商家公告" prop="service">
-          <el-input
-            class="input"
-            placeholder="商家公告"
-            v-model="shopInfo.bulletin"
-            type="textarea"
-          ></el-input>
         </el-form-item>
 
         <!-- 配送服务 -->
@@ -135,56 +130,16 @@
             v-model="shopInfo.shipping_fee"
           ></el-input>
         </el-form-item>
-        <!-- 动态增减活动 -->
-        <el-form-item
-          v-for="(activity, index) in shopInfo.activities"
-          :label="'活动优惠' + (index + 1)"
-          :key="activity.key"
-          :prop="'activities.' + index + '.value'"
-          :rules="{
-            required: true,
-            message: '活动内容不能为空',
-            trigger: 'blur',
-          }"
-        >
-          <el-input
-            class="input"
-            placeholder="优惠虽好, 请仔细填写哦"
-            v-model="activity.value"
-          ></el-input>
-          <el-button @click.prevent="removeActivity(activity)" type="danger">
-            删除
-          </el-button>
-        </el-form-item>
-
-        <!-- 增加活动 -->
-        <el-form-item>
-          <el-button type="primary" @click="addActivity">新增活动</el-button>
-        </el-form-item>
 
         <!-- 提交 -->
         <el-form-item class="submit-wrap">
-          <el-button type="primary" @click="submitForm" :disabled="hasShop">
-            立即创建
+          <el-button type="primary" @click="submitForm">
+            确认修改
           </el-button>
           <el-button @click="resetForm()">重置</el-button>
         </el-form-item>
       </el-form>
-    </div>
-
-    <!-- dialog预览图片 -->
-    <el-dialog
-      v-model="dialogVisible"
-      title=""
-      width="50%"
-      style="text-align: center;"
-    >
-      <img
-        style="height: 800px; width: 800px; margin: 0 auto;"
-        :src="shopInfo.pic_url"
-        alt=""
-      />
-    </el-dialog>
+    </el-drawer>
   </div>
 </template>
 
@@ -195,17 +150,21 @@ import {
   toRefs,
   getCurrentInstance,
   ref,
-  watch,
+  watchEffect,
 } from 'vue'
-import { getHasShop, locationSearch, createShop } from '@/api/restaurant'
+import { locationSearch, updateShop } from '@/api/restaurant'
 import { uploadShopAvatar } from '@/api/upload'
 import config from '@/config'
+import { useStore } from 'vuex'
 
 export default defineComponent({
-  setup() {
+  setup(props, context) {
+    const store = useStore()
     const { proxy: ctx } = getCurrentInstance() // 可以把ctx当成vue2中的this
 
     const state = reactive({
+      hasUpdate: false, // 是否更新了信息,如果更新了,则关闭时,父组件进行查询
+      drawer: false,
       realName: false, // 实名状态
       hasShop: false, //是否已经注册过店铺
       addressList: [], // 地址选项
@@ -213,26 +172,8 @@ export default defineComponent({
       dialogVisible: false,
       fileFormData: {}, // 向服务器提交的数据
 
-      // 对图片进行表单验证
-      shop_avatar: true,
       // 收集除图片外的数据
-      shopInfo: {
-        shipping_fee: 0,
-        lat: '',
-        lng: '',
-        pic_url: '',
-        name: '',
-        category: '',
-        call_center: '',
-        address: '',
-        addressDetail: '',
-        shopping_time_start: '',
-        shopping_time_end: '',
-        bulletin: '欢迎下单',
-        delivery: '商家配送',
-        activities: [{ value: '' }],
-        min_price: 20,
-      },
+      shopInfo: {},
       // 验证规则
       rules: {
         name: [
@@ -274,9 +215,19 @@ export default defineComponent({
       shopForm: ref(null),
     })
     const methods = {
+      // 关闭时判断是否有更新，如果更新了通知父组件需要重新获取商店数据
+      handleClose(done) {
+        if (state.hasUpdate) {
+          context.emit('hasUpdate')
+          state.hasUpdate = false
+        }
+        done()
+      },
+      handleDrawer() {
+        state.drawer = true
+      },
       // 删除头像
       removeAvatar() {
-        state.shop_avatar = true
         state.shopInfo.pic_url = ''
       },
       // 上传头像
@@ -284,7 +235,6 @@ export default defineComponent({
         uploadShopAvatar({ file: file.raw })
           .then(res => {
             console.log(res)
-            state.shop_avatar = false
             state.shopInfo.pic_url = config.baseURL + res.url
           })
           .catch(e => {
@@ -293,18 +243,6 @@ export default defineComponent({
               message: '头像上传失败',
             })
           })
-      },
-      // 获取是否已有店铺
-      getHasShop() {
-        getHasShop().then(res => {
-          if (res.data) {
-            state.hasShop = true
-            ctx.$message({
-              type: 'error',
-              message: '已有店铺, 不允许注册多个店铺!',
-            })
-          }
-        })
       },
       // 搜索位置
       locationSearch(val) {
@@ -343,15 +281,15 @@ export default defineComponent({
       submitForm() {
         state.shopForm.validate(valid => {
           if (valid) {
-            state.shopInfo.address += state.shopInfo.addressDetail
-            console.log(state.shopInfo)
-            createShop(state.shopInfo)
+            state.shopInfo.address += state.shopInfo.addressDetail ?? ''
+            updateShop(state.shopInfo)
               .then(res => {
                 if (res.status === 200) {
                   ctx.$message({
                     type: 'success',
                     message: res.message,
                   })
+                  state.hasUpdate = true
                   state.hasShop = true
                 } else {
                   ctx.$message({
@@ -377,9 +315,8 @@ export default defineComponent({
         state.shopForm.resetFields()
       },
     }
-    methods.getHasShop() //获取是否已有店铺, 控制注册按钮是否可用
 
-    watch(
+    watchEffect(
       () => state.shopInfo.address,
       val => {
         let addressObj = state.addressList.filter(
@@ -391,6 +328,9 @@ export default defineComponent({
         }
       }
     )
+
+    state.shopInfo = JSON.parse(JSON.stringify(store.state.restaurant.shopInfo))
+    console.log(state.shopInfo)
     return {
       ...methods,
       ...toRefs(state),
@@ -400,24 +340,12 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
-.add-shop {
-  width: 70%;
-  margin: 0 auto;
+.input {
+  width: 80%;
 }
-.input,
-.el-select {
-  width: 50%;
-  margin-right: 30px;
-}
-
-.activeTime {
-  //   background-color: red;
-  width: 50%;
-  :deep(.el-form-item__content) {
-    display: flex;
-    // width: 60%;
-    justify-content: space-between;
-    flex: none;
+.timer {
+  .el-input {
+    width: 120px;
   }
 }
 </style>
