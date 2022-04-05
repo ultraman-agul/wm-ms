@@ -1,170 +1,176 @@
 <template>
-  <div class="add-shop">
-    <el-form
-      :model="shopInfo"
-      :rules="rules"
-      ref="shopForm"
-      label-width="100px"
-      class="shop-info"
-    >
-      <!-- 店铺名 -->
-      <el-form-item label="店铺名称" prop="name">
-        <el-input
-          class="input"
-          placeholder="起个你喜欢的名字吧"
-          v-model="shopInfo.name"
-        ></el-input>
-      </el-form-item>
-
-      <!-- 店铺地址 -->
-      <el-form-item label="店铺地址" prop="address">
-        <el-select
-          v-model="shopInfo.address"
-          filterable
-          remote
-          reserve-keyword
-          placeholder="请输入关键词"
-          :remote-method="locationSearch"
-          :loading="loading"
-        >
-          <el-option
-            v-for="item in addressList"
-            :key="item.id"
-            :label="item.title + ' ' + item.address"
-            :value="item.address"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="店铺地址补充" prop="addressDetail">
-        <el-input
-          class="input"
-          placeholder="地址补充"
-          v-model="shopInfo.addressDetail"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="联系电话" prop="call_center">
-        <el-input
-          class="input"
-          placeholder="联系电话"
-          v-model="shopInfo.call_center"
-        ></el-input>
-      </el-form-item>
-      <!-- 店铺分类 -->
-      <el-form-item label="店铺分类" prop="classify">
-        <el-input
-          class="input"
-          placeholder="店铺分类"
-          v-model="shopInfo.classify"
-        ></el-input>
-      </el-form-item>
-
-      <!-- 营业时间 -->
-      <el-form-item label="营业时间" required class="activeTime">
-        <el-form-item prop="start_time" style="margin-right:-60px;">
-          <el-time-select
-            placeholder="起始时间"
-            v-model="shopInfo.start_time"
-            :picker-options="{
-              start: '06:00',
-              step: '00:30',
-              end: '24:00',
-            }"
-          ></el-time-select>
-        </el-form-item>
-        <el-form-item prop="end_time">
-          <el-time-select
-            placeholder="结束时间"
-            v-model="shopInfo.end_time"
-            :picker-options="{
-              start: '06:00',
-              step: '00:30',
-              end: '24:00',
-            }"
-          ></el-time-select>
-        </el-form-item>
-      </el-form-item>
-      <!-- 店铺头像图片 -->
-      <el-form-item label="店铺头像" prop="shop_avatar" :required="shop_avatar">
-        <el-upload
-          action="#"
-          ref="avatar"
-          list-type="picture-card"
-          :on-preview="handlePictureCardPreview"
-          :on-remove="removeAvatar"
-          :on-change="uploadAvatar"
-          :auto-upload="false"
-          :limit="1"
-        >
-          <i class="el-icon-plus"></i>
-        </el-upload>
-      </el-form-item>
-
-      <!-- 商家服务 -->
-      <el-form-item label="商家公告" prop="service">
-        <el-input
-          class="input"
-          placeholder="商家公告"
-          v-model="shopInfo.bulletin"
-          type="textarea"
-        ></el-input>
-      </el-form-item>
-
-      <!-- 配送服务 -->
-      <el-form-item label="配送服务" prop="delivery">
-        <el-radio-group v-model="shopInfo.delivery">
-          <el-radio label="商家配送"></el-radio>
-          <el-radio label="骑手配送"></el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="起送价格" prop="min_price">
-        <el-input
-          class="input"
-          placeholder="起送价格"
-          v-model="shopInfo.min_price"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="配送费" prop="shipping_fee">
-        <el-input
-          class="input"
-          placeholder="配送费"
-          v-model="shopInfo.shipping_fee"
-        ></el-input>
-      </el-form-item>
-      <!-- 动态增减活动 -->
-      <el-form-item
-        v-for="(activity, index) in shopInfo.activities"
-        :label="'活动优惠' + (index + 1)"
-        :key="activity.key"
-        :prop="'activities.' + index + '.value'"
-        :rules="{
-          required: true,
-          message: '活动内容不能为空',
-          trigger: 'blur',
-        }"
+  <div class="main-content">
+    <div class="add-shop">
+      <el-form
+        :model="shopInfo"
+        :rules="rules"
+        ref="shopForm"
+        label-width="100px"
+        class="shop-info"
       >
-        <el-input
-          class="input"
-          placeholder="优惠虽好, 请仔细填写哦"
-          v-model="activity.value"
-        ></el-input>
-        <el-button @click.prevent="removeActivity(activity)" type="danger">
-          删除
-        </el-button>
-      </el-form-item>
+        <!-- 店铺名 -->
+        <el-form-item label="店铺名称" prop="name">
+          <el-input
+            class="input"
+            placeholder="起个你喜欢的名字吧"
+            v-model="shopInfo.name"
+          ></el-input>
+        </el-form-item>
 
-      <!-- 增加活动 -->
-      <el-form-item>
-        <el-button type="primary" @click="addActivity">新增活动</el-button>
-      </el-form-item>
+        <!-- 店铺地址 -->
+        <el-form-item label="店铺地址" prop="address">
+          <el-select
+            v-model="shopInfo.address"
+            filterable
+            remote
+            reserve-keyword
+            placeholder="请输入关键词"
+            :remote-method="locationSearch"
+            :loading="loading"
+          >
+            <el-option
+              v-for="item in addressList"
+              :key="item.id"
+              :label="item.title + ' ' + item.address"
+              :value="item.address"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="店铺地址补充" prop="addressDetail">
+          <el-input
+            class="input"
+            placeholder="地址补充"
+            v-model="shopInfo.addressDetail"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="联系电话" prop="call_center">
+          <el-input
+            class="input"
+            placeholder="联系电话"
+            v-model="shopInfo.call_center"
+          ></el-input>
+        </el-form-item>
+        <!-- 店铺分类 -->
+        <el-form-item label="店铺分类" prop="classify">
+          <el-input
+            class="input"
+            placeholder="店铺分类"
+            v-model="shopInfo.classify"
+          ></el-input>
+        </el-form-item>
 
-      <!-- 提交 -->
-      <el-form-item class="submit-wrap">
-        <el-button type="primary" @click="submitForm" :disabled="hasShop">
-          立即创建
-        </el-button>
-        <el-button @click="resetForm()">重置</el-button>
-      </el-form-item>
-    </el-form>
+        <!-- 营业时间 -->
+        <el-form-item label="营业时间" required class="activeTime">
+          <el-form-item prop="start_time" style="margin-right:-60px;">
+            <el-time-select
+              placeholder="起始时间"
+              v-model="shopInfo.start_time"
+              :picker-options="{
+                start: '06:00',
+                step: '00:30',
+                end: '24:00',
+              }"
+            ></el-time-select>
+          </el-form-item>
+          <el-form-item prop="end_time">
+            <el-time-select
+              placeholder="结束时间"
+              v-model="shopInfo.end_time"
+              :picker-options="{
+                start: '06:00',
+                step: '00:30',
+                end: '24:00',
+              }"
+            ></el-time-select>
+          </el-form-item>
+        </el-form-item>
+        <!-- 店铺头像图片 -->
+        <el-form-item
+          label="店铺头像"
+          prop="shop_avatar"
+          :required="shop_avatar"
+        >
+          <el-upload
+            action="#"
+            ref="avatar"
+            list-type="picture-card"
+            :on-preview="handlePictureCardPreview"
+            :on-remove="removeAvatar"
+            :on-change="uploadAvatar"
+            :auto-upload="false"
+            :limit="1"
+          >
+            <i class="el-icon-plus"></i>
+          </el-upload>
+        </el-form-item>
+
+        <!-- 商家服务 -->
+        <el-form-item label="商家公告" prop="service">
+          <el-input
+            class="input"
+            placeholder="商家公告"
+            v-model="shopInfo.bulletin"
+            type="textarea"
+          ></el-input>
+        </el-form-item>
+
+        <!-- 配送服务 -->
+        <el-form-item label="配送服务" prop="delivery">
+          <el-radio-group v-model="shopInfo.delivery">
+            <el-radio label="商家配送"></el-radio>
+            <el-radio label="骑手配送"></el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="起送价格" prop="min_price">
+          <el-input
+            class="input"
+            placeholder="起送价格"
+            v-model="shopInfo.min_price"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="配送费" prop="shipping_fee">
+          <el-input
+            class="input"
+            placeholder="配送费"
+            v-model="shopInfo.shipping_fee"
+          ></el-input>
+        </el-form-item>
+        <!-- 动态增减活动 -->
+        <el-form-item
+          v-for="(activity, index) in shopInfo.activities"
+          :label="'活动优惠' + (index + 1)"
+          :key="activity.key"
+          :prop="'activities.' + index + '.value'"
+          :rules="{
+            required: true,
+            message: '活动内容不能为空',
+            trigger: 'blur',
+          }"
+        >
+          <el-input
+            class="input"
+            placeholder="优惠虽好, 请仔细填写哦"
+            v-model="activity.value"
+          ></el-input>
+          <el-button @click.prevent="removeActivity(activity)" type="danger">
+            删除
+          </el-button>
+        </el-form-item>
+
+        <!-- 增加活动 -->
+        <el-form-item>
+          <el-button type="primary" @click="addActivity">新增活动</el-button>
+        </el-form-item>
+
+        <!-- 提交 -->
+        <el-form-item class="submit-wrap">
+          <el-button type="primary" @click="submitForm" :disabled="hasShop">
+            立即创建
+          </el-button>
+          <el-button @click="resetForm()">重置</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
 
     <!-- dialog预览图片 -->
     <el-dialog
@@ -395,7 +401,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .add-shop {
-  width: 60%;
+  width: 70%;
   margin: 0 auto;
 }
 .input,

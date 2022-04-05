@@ -68,3 +68,18 @@ export const createShop = data => {
   }
   return _post(req)
 }
+
+export const getShopInfo = () => {
+  const req = {
+    url: 'v1/getShopInfo',
+  }
+  return _get(req)
+}
+
+export const updateActivities = data => {
+  const req = {
+    url: 'v1/updateActivities',
+    data,
+  }
+  return _get(req)
+}
