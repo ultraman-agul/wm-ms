@@ -1,2 +1,3 @@
 import shop from './shop'
-export default [...shop]
+import goods from './goods'
+export default [...shop, ...goods]

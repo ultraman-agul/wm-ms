@@ -141,8 +141,15 @@
 
 <script>
 import infoForm from './infoForm.vue'
-import { getShopInfo, updateActivities } from '@/api/restaurant'
-import { defineComponent, reactive, toRefs, getCurrentInstance, ref } from 'vue'
+import { updateActivities } from '@/api/restaurant'
+import {
+  defineComponent,
+  reactive,
+  toRefs,
+  getCurrentInstance,
+  ref,
+  computed,
+} from 'vue'
 import { useStore } from 'vuex'
 
 export default defineComponent({
@@ -150,6 +157,7 @@ export default defineComponent({
   setup() {
     const store = useStore()
     const { proxy: ctx } = getCurrentInstance()
+
     const state = reactive({
       shopInfo: {},
       activityDialog: false,
@@ -160,31 +168,10 @@ export default defineComponent({
       },
       activityForm: ref(null),
       editForm: {},
+
       // 获取店铺信息
       getShopInfo() {
-        getShopInfo()
-          .then(res => {
-            if (res.status === 200) {
-              state.shopInfo = res.data
-              store.dispatch('restaurant/setShopInfo', res.data)
-              state.newActivities = res.data.discounts2
-              // ctx.$message({
-              //   type: 'success',
-              //   message: res.message,
-              // })
-            } else {
-              ctx.$message({
-                type: 'error',
-                message: res.message,
-              })
-            }
-          })
-          .catch(e => {
-            ctx.$message({
-              type: 'error',
-              message: e,
-            })
-          })
+        store.dispatch('restaurant/getShopInfo')
       },
       // 控制新增活动的dialog
       showActivityDialog() {
@@ -254,7 +241,10 @@ export default defineComponent({
       },
     })
     state.getShopInfo()
-
+    state.shopInfo = computed(() => store.state.restaurant.shopInfo)
+    state.newActivities = computed(
+      () => store.state.restaurant.shopInfo.discounts2
+    )
     return {
       ...toRefs(state),
     }

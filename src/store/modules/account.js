@@ -1,5 +1,6 @@
 import { userInfo } from '@/api/user'
 import { getItem, setItem, removeItem } from '@/utils/storage' //getItem和setItem是封装的操作localStorage的方法
+import store from '@/store'
 
 export default {
   namespaced: true,
@@ -25,6 +26,9 @@ export default {
       const { status: code, data } = await userInfo()
       if (+code === 200) {
         commit('setUserinfo', data)
+        if (data.status === 2) {
+          store.dispatch('restaurant/getShopInfo')
+        }
         return Promise.resolve(data)
       }
     },

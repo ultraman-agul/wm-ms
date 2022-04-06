@@ -3,18 +3,22 @@ import {
   addCategory,
   deleteCategory,
   allRestaurantNoLoc,
+  getShopInfo,
 } from '@/api/restaurant'
+import { getItem, setItem, removeItem } from '@/utils/storage' //getItem和setItem是封装的操作localStorage的方法
+
 export default {
   namespaced: true,
   state: {
     restaurant_id: '',
     category: [],
     restaurantList: [],
-    shopInfo: {},
+    shopInfo: getItem('shopInfo'),
   },
   mutations: {
     setShopInfo(state, data) {
       state.shopInfo = data
+      setItem('shopInfo', data)
     },
     setRestaurantId(state, data) {
       state.restaurant_id = data
@@ -77,8 +81,16 @@ export default {
       })
     },
 
-    setShopInfo({ commit }, data) {
-      commit('setShopInfo', data)
+    getShopInfo({ commit }) {
+      getShopInfo()
+        .then(res => {
+          if (res.status === 200) {
+            commit('setShopInfo', res.data)
+          }
+        })
+        .catch(e => {
+          console.log(e)
+        })
     },
   },
 }
