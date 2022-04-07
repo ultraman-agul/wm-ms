@@ -14,7 +14,7 @@
             </el-form-item>
           </el-form>
           <el-table
-            :data="filterTableData"
+            :data="foodList"
             stripe
             border
             :header-cell-style="{ 'text-align': 'center' }"
@@ -84,6 +84,17 @@
               </template>
             </el-table-column>
           </el-table>
+          <div class="pagination">
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="currentPage"
+              :page-sizes="[5, 10, 20, 50]"
+              :page-size="pageSize"
+              layout="total, sizes, prev, pager, next, jumper"
+              :total="totalNum"
+            ></el-pagination>
+          </div>
         </div>
         <div v-else>没有注册店铺, 所以没有食品信息</div>
       </el-tab-pane>
@@ -121,6 +132,7 @@ export default defineComponent({
     const store = useStore()
     const shopInfo = computed(() => store.state.restaurant.shopInfo)
     const state = reactive({
+      totalData: [], // 存储所有数据，前端分页
       foodList: [],
       hasShop: false,
       showDialog: false,
@@ -128,23 +140,29 @@ export default defineComponent({
       foodId: 0,
       search: '',
       editFood: {},
-
+      currentPage: 1,
+      pageSize: 10,
+      totalNum: 0,
       getFoods() {
         // 获取食品信息
         state.hasShop = !!shopInfo.value.id
         if (state.hasShop) {
-          getFoods({ restaurant_id: shopInfo.value.id }).then(res => {
+          getFoods({
+            restaurant_id: shopInfo.value.id,
+          }).then(res => {
             if (res.status == 200) {
-              state.foodList = []
+              state.totalData = []
               res.data.forEach(item => {
                 item.spus.forEach(subItem => {
                   subItem.category = item.name
                   subItem.price = subItem.skus[0].price
                   subItem.description = subItem.skus[0].description
-                  state.foodList.push(subItem)
+                  state.totalData.push(subItem)
                 })
               })
-              console.log(state.foodList)
+              state.totalNum = state.totalData.length
+              state.handleSplitPage()
+              console.log(state.totalData)
             } else {
               ctx.$message({
                 type: 'error',
@@ -153,6 +171,22 @@ export default defineComponent({
             }
           })
         }
+      },
+      // pageSize 改变时
+      handleSizeChange(pageSize) {
+        state.pageSize = pageSize
+        state.handleSplitPage()
+      },
+      // currentPage 改变时
+      handleCurrentChange(currentPage) {
+        state.currentPage = currentPage
+        state.handleSplitPage()
+      },
+      handleSplitPage() {
+        state.foodList = state.totalData.slice(
+          (state.currentPage - 1) * state.pageSize,
+          state.currentPage * state.pageSize
+        )
       },
       handleEdit(index, row) {
         state.foodId = row.id
@@ -194,12 +228,15 @@ export default defineComponent({
     })
     state.getFoods() //获取食品数据
     // 表格筛选
-    const filterTableData = computed(() =>
-      state.foodList.filter(
-        data =>
-          !state.search ||
-          data.name.toLowerCase().includes(state.search.toLowerCase())
-      )
+    watch(
+      () => state.search,
+      () => {
+        state.foodList = state.totalData.filter(
+          data =>
+            !state.search ||
+            data.name.toLowerCase().includes(state.search.toLowerCase())
+        )
+      }
     )
     store.dispatch('restaurant/getCategoryFn', shopInfo.value.id) // 获取餐厅的所有分类
     const categoryList = computed(() => store.state.restaurant.category)
@@ -214,7 +251,6 @@ export default defineComponent({
     )
     return {
       ...toRefs(state),
-      filterTableData,
       categoryList,
     }
   },
