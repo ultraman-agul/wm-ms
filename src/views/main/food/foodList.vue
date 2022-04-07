@@ -1,82 +1,93 @@
 <template>
   <div class="main-content food-list">
-    <div class="food-table" v-if="hasShop">
-      <el-form inline>
-        <el-form-item>
-          <el-input v-model="search" placeholder="请输入名称搜索" />
-        </el-form-item>
-        <el-form-item>
-          <el-button @click="showAddDialog = true" type="success">
-            添加食品
-          </el-button>
-        </el-form-item>
-      </el-form>
-      <el-table
-        :data="filterTableData"
-        stripe
-        border
-        :header-cell-style="{ 'text-align': 'center' }"
-        :cell-style="{ 'text-align': 'center' }"
-        style="width: 100%"
-      >
-        <!-- 表格展开显示的内容 -->
-        <el-table-column type="expand">
-          <template #default="scope">
-            <el-form label-position="left" inline class="demo-table-expand">
-              <el-form-item label="名称 : ">
-                <span>{{ scope.row.name }}</span>
-              </el-form-item>
-              <el-form-item label="价格 : ">
-                <span>{{ scope.row.price }}</span>
-              </el-form-item>
-              <el-form-item label="商品已售 : ">
-                <span>{{ scope.row.month_saled }}</span>
-              </el-form-item>
-              <el-form-item label="好评数 : ">
-                <span>{{ scope.row.praise_num }}</span>
-              </el-form-item>
-              <el-form-item label="描述 : ">
-                <span>{{ scope.row.description }}</span>
-              </el-form-item>
-              <el-form-item label="食品图片 : ">
-                <span>
-                  <el-image
-                    style="width: 100px; height: 100px"
-                    :src="scope.row.pic_url"
-                  ></el-image>
-                </span>
-              </el-form-item>
-            </el-form>
-          </template>
-        </el-table-column>
+    <el-tabs type="border-card">
+      <el-tab-pane label="食品列表">
+        <div class="food-table" v-if="hasShop">
+          <el-form inline>
+            <el-form-item>
+              <el-input v-model="search" placeholder="请输入名称搜索" />
+            </el-form-item>
+            <el-form-item>
+              <el-button @click="showAddDialog = true" type="success">
+                添加食品
+              </el-button>
+            </el-form-item>
+          </el-form>
+          <el-table
+            :data="filterTableData"
+            stripe
+            border
+            :header-cell-style="{ 'text-align': 'center' }"
+            :cell-style="{ 'text-align': 'center' }"
+            style="width: 100%"
+          >
+            <!-- 表格展开显示的内容 -->
+            <el-table-column type="expand">
+              <template #default="scope">
+                <el-form label-position="left" inline class="demo-table-expand">
+                  <el-form-item label="名称 : ">
+                    <span>{{ scope.row.name }}</span>
+                  </el-form-item>
+                  <el-form-item label="价格 : ">
+                    <span>{{ scope.row.price }}</span>
+                  </el-form-item>
+                  <el-form-item label="商品已售 : ">
+                    <span>{{ scope.row.month_saled }}</span>
+                  </el-form-item>
+                  <el-form-item label="好评数 : ">
+                    <span>{{ scope.row.praise_num }}</span>
+                  </el-form-item>
+                  <el-form-item label="描述 : ">
+                    <span>{{ scope.row.description }}</span>
+                  </el-form-item>
+                  <el-form-item label="食品图片 : ">
+                    <span>
+                      <el-image
+                        style="width: 100px; height: 100px"
+                        :src="scope.row.pic_url"
+                      ></el-image>
+                    </span>
+                  </el-form-item>
+                </el-form>
+              </template>
+            </el-table-column>
 
-        <el-table-column type="index" label="序号" width="60"></el-table-column>
-        <el-table-column prop="name" label="名称"></el-table-column>
-        <el-table-column prop="category" label="分类"></el-table-column>
-        <el-table-column prop="price" label="价格"></el-table-column>
-        <el-table-column prop="month_saled" label="月售"></el-table-column>
-        <el-table-column
-          prop="description"
-          label="描述"
-          width="300"
-        ></el-table-column>
-        <el-table-column label="操作">
-          <template #default="scope">
-            <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">
-              编辑
-            </el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)"
-            >
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-    <div v-else>没有注册店铺, 所以没有食品信息</div>
+            <el-table-column
+              type="index"
+              label="序号"
+              width="60"
+            ></el-table-column>
+            <el-table-column prop="name" label="名称"></el-table-column>
+            <el-table-column prop="category" label="分类"></el-table-column>
+            <el-table-column prop="price" label="价格"></el-table-column>
+            <el-table-column prop="month_saled" label="月售"></el-table-column>
+            <el-table-column
+              prop="description"
+              label="描述"
+              width="300"
+            ></el-table-column>
+            <el-table-column label="操作">
+              <template #default="scope">
+                <el-button
+                  size="mini"
+                  @click="handleEdit(scope.$index, scope.row)"
+                >
+                  编辑
+                </el-button>
+                <el-button
+                  size="mini"
+                  type="danger"
+                  @click="handleDelete(scope.$index, scope.row)"
+                >
+                  删除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+        <div v-else>没有注册店铺, 所以没有食品信息</div>
+      </el-tab-pane>
+    </el-tabs>
 
     <el-dialog title="更改食品信息" v-model="showDialog" width="40%" center>
       <edit-form :editFood="editFood" :foodId="foodId"></edit-form>

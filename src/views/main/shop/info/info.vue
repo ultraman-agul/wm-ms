@@ -1,141 +1,149 @@
 <template>
   <div class="main-content shop-info">
-    <div class="show-info" v-if="shopInfo">
-      <el-descriptions class="margin-top" title="我的店铺" :column="1" border>
-        <template v-slot:extra>
-          <!-- 抽屉组件 -->
-          <info-form @hasUpdate="getShopInfo"></info-form>
-        </template>
-
-        <el-descriptions-item>
-          <template v-slot:label>
-            <i class="el-icon-user"></i>
-            店铺头像
-          </template>
-          <el-avatar :size="60">
-            <img :src="shopInfo.pic_url" />
-          </el-avatar>
-        </el-descriptions-item>
-
-        <el-descriptions-item>
-          <template v-slot:label>
-            <i class="el-icon-office-building"></i>
-            店铺名
-          </template>
-          {{ shopInfo.name }}
-        </el-descriptions-item>
-
-        <el-descriptions-item>
-          <template v-slot:label>
-            <i class="el-icon-time"></i>
-            营业时间
-          </template>
-          {{ shopInfo.shopping_time_start }} - {{ shopInfo.shopping_time_end }}
-        </el-descriptions-item>
-
-        <el-descriptions-item>
-          <template v-slot:label>
-            <i class="el-icon-price-tag"></i>
-            店铺分类
-          </template>
-          {{ shopInfo.category }}
-        </el-descriptions-item>
-        <el-descriptions-item>
-          <template v-slot:label>
-            <i class="el-icon-tickets"></i>
-            配送形式
-          </template>
-          <el-tag size="small">{{ shopInfo.delivery }}</el-tag>
-        </el-descriptions-item>
-
-        <el-descriptions-item>
-          <template v-slot:label>
-            <i class="el-icon-location-outline"></i>
-            店铺地址
-          </template>
-          {{ shopInfo.address }}
-        </el-descriptions-item>
-      </el-descriptions>
-      <el-divider content-position="center">活动公告</el-divider>
-    </div>
-
-    <div class="cards" v-if="shopInfo">
-      <!-- 活动展示 -->
-      <el-card class="box-card">
-        <template #header class="clearfix">
-          <span class="el-icon-goods">活动列表</span>
-        </template>
-        <el-button class="addActivity" @click="addActivity" type="primary">
-          再加一条
-        </el-button>
-        <el-table :data="newActivities">
-          <el-table-column label="活动内容" prop="info"></el-table-column>
-          <el-table-column label="图标" prop="icon_url">
-            <template #default="scope">
-              <img :src="scope.row.icon_url" alt="" />
+    <el-tabs type="border-card">
+      <el-tab-pane label="我的店铺">
+        <div class="show-info" v-if="shopInfo">
+          <el-descriptions class="margin-top" :column="1" border>
+            <template v-slot:extra>
+              <!-- 抽屉组件 -->
+              <info-form @hasUpdate="getShopInfo"></info-form>
             </template>
-          </el-table-column>
-          <el-table-column label="操作">
-            <template #default="scope">
-              <el-button
-                icon="el-icon-delete"
-                @click="removeActivity(scope.row)"
-              ></el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-card>
 
-      <!-- 公告展示 -->
-      <el-card class="box-card-notice">
-        <template #header class="clearfix">
-          <span class="el-icon-chat-line-round">店铺公告</span>
-        </template>
-        <div>
-          {{ shopInfo.bulletin }}
+            <el-descriptions-item>
+              <template v-slot:label>
+                <i class="el-icon-user"></i>
+                店铺头像
+              </template>
+              <el-avatar :size="60">
+                <img :src="shopInfo.pic_url" />
+              </el-avatar>
+            </el-descriptions-item>
+
+            <el-descriptions-item>
+              <template v-slot:label>
+                <i class="el-icon-office-building"></i>
+                店铺名
+              </template>
+              {{ shopInfo.name }}
+            </el-descriptions-item>
+
+            <el-descriptions-item>
+              <template v-slot:label>
+                <i class="el-icon-time"></i>
+                营业时间
+              </template>
+              {{ shopInfo.shopping_time_start }} -
+              {{ shopInfo.shopping_time_end }}
+            </el-descriptions-item>
+
+            <el-descriptions-item>
+              <template v-slot:label>
+                <i class="el-icon-price-tag"></i>
+                店铺分类
+              </template>
+              {{ shopInfo.category }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+              <template v-slot:label>
+                <i class="el-icon-tickets"></i>
+                配送形式
+              </template>
+              <el-tag size="small">{{ shopInfo.delivery }}</el-tag>
+            </el-descriptions-item>
+
+            <el-descriptions-item>
+              <template v-slot:label>
+                <i class="el-icon-location-outline"></i>
+                店铺地址
+              </template>
+              {{ shopInfo.address }}
+            </el-descriptions-item>
+          </el-descriptions>
+          <el-divider content-position="center">活动公告</el-divider>
         </div>
-      </el-card>
-    </div>
 
-    <div v-else>还未注册店铺</div>
-    <div class="dialogs">
-      <!-- dialog修改店铺活动 -->
-      <el-dialog v-model="activityDialog" title="活动优惠">
-        <el-form :rules="rules" :model="editForm" ref="activityForm">
-          <el-form-item label="活动内容" prop="info">
-            <el-input class="input" v-model="editForm.info"></el-input>
-          </el-form-item>
-          <el-form-item label="活动类型" prop="icon_url">
-            <el-radio-group v-model="editForm.icon_url">
-              <el-radio
-                label="http://p0.meituan.net/xianfu/f8bc8dffdbc805878aa3801a33f563cd1001.png"
-              >
-                满减
-              </el-radio>
-              <el-radio
-                label="http://p1.meituan.net/xianfu/9c997ecce6150671b8459738a26f8bd9767.png"
-              >
-                打折
-              </el-radio>
-              <el-radio
-                label="http://p0.meituan.net/xianfu/019d1bbb1310b1531e6af6172c9a5095581.png"
-              >
-                首单优惠
-              </el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </el-form>
-
-        <template #footer class="dialog-footer">
-          <div class="footer-right">
-            <el-button @click="activityDialog = false">取 消</el-button>
-            <el-button type="primary" @click.prevent="updateActivities(true)">
-              确 定
+        <div class="cards" v-if="shopInfo">
+          <!-- 活动展示 -->
+          <el-card class="box-card">
+            <template #header class="clearfix">
+              <span class="el-icon-goods">活动列表</span>
+            </template>
+            <el-button class="addActivity" @click="addActivity" type="primary">
+              再加一条
             </el-button>
-          </div>
-        </template>
-      </el-dialog>
-    </div>
+            <el-table :data="newActivities">
+              <el-table-column label="活动内容" prop="info"></el-table-column>
+              <el-table-column label="图标" prop="icon_url">
+                <template #default="scope">
+                  <img :src="scope.row.icon_url" alt="" />
+                </template>
+              </el-table-column>
+              <el-table-column label="操作">
+                <template #default="scope">
+                  <el-button
+                    icon="el-icon-delete"
+                    @click="removeActivity(scope.row)"
+                  ></el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-card>
+
+          <!-- 公告展示 -->
+          <el-card class="box-card-notice">
+            <template #header class="clearfix">
+              <span class="el-icon-chat-line-round">店铺公告</span>
+            </template>
+            <div>
+              {{ shopInfo.bulletin }}
+            </div>
+          </el-card>
+        </div>
+
+        <div v-else>还未注册店铺</div>
+        <div class="dialogs">
+          <!-- dialog修改店铺活动 -->
+          <el-dialog v-model="activityDialog" title="活动优惠">
+            <el-form :rules="rules" :model="editForm" ref="activityForm">
+              <el-form-item label="活动内容" prop="info">
+                <el-input class="input" v-model="editForm.info"></el-input>
+              </el-form-item>
+              <el-form-item label="活动类型" prop="icon_url">
+                <el-radio-group v-model="editForm.icon_url">
+                  <el-radio
+                    label="http://p0.meituan.net/xianfu/f8bc8dffdbc805878aa3801a33f563cd1001.png"
+                  >
+                    满减
+                  </el-radio>
+                  <el-radio
+                    label="http://p1.meituan.net/xianfu/9c997ecce6150671b8459738a26f8bd9767.png"
+                  >
+                    打折
+                  </el-radio>
+                  <el-radio
+                    label="http://p0.meituan.net/xianfu/019d1bbb1310b1531e6af6172c9a5095581.png"
+                  >
+                    首单优惠
+                  </el-radio>
+                </el-radio-group>
+              </el-form-item>
+            </el-form>
+
+            <template #footer class="dialog-footer">
+              <div class="footer-right">
+                <el-button @click="activityDialog = false">取 消</el-button>
+                <el-button
+                  type="primary"
+                  @click.prevent="updateActivities(true)"
+                >
+                  确 定
+                </el-button>
+              </div>
+            </template>
+          </el-dialog>
+        </div>
+      </el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
