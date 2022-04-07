@@ -91,3 +91,19 @@ export const updateShop = data => {
   }
   return _post(req)
 }
+
+export const restaurantComment = data => {
+  const req = {
+    url: '/v1/restaurantComment',
+    data,
+  }
+  return _get(req)
+}
+
+export const replyComment = data => {
+  const req = {
+    url: '/v1/replyComment',
+    data,
+  }
+  return _get(req)
+}
