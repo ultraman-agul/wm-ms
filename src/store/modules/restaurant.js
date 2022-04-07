@@ -18,6 +18,7 @@ export default {
   mutations: {
     setShopInfo(state, data) {
       state.shopInfo = data
+      console.log(data)
       setItem('shopInfo', data)
     },
     setRestaurantId(state, data) {
