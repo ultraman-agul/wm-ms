@@ -11,10 +11,10 @@ export default [
     icon: 'el-icon-goods',
     children: [
       {
-        path: 'foodList',
-        name: 'foodList',
+        path: 'food',
+        name: 'food',
         meta: { title: '食品信息' },
-        component: () => import('@/views/main/food/foodList/foodList.vue'),
+        component: () => import('@/views/main/food/foodList.vue'),
       },
     ],
   },
