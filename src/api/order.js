@@ -15,3 +15,11 @@ export const getOrder = data => {
   }
   return _get(req)
 }
+
+export const getOrderByRestaurantId = data => {
+  const req = {
+    url: '/v1/getOrderByRestaurantId',
+    data,
+  }
+  return _get(req)
+}
