@@ -1,6 +1,6 @@
 <template>
   <div class="main-content addFood">
-    <div v-if="hasShop">
+    <div>
       <el-form
         ref="ruleFormRef"
         :model="ruleForm"
@@ -64,9 +64,6 @@
         </el-form-item>
       </el-form>
     </div>
-    <div v-else>
-      还未注册店铺, 无法添加商品
-    </div>
     <!-- dialog预览图片 -->
     <el-dialog
       v-model="dialogVisible"
@@ -84,18 +81,15 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed } from 'vue'
+import { reactive, ref, computed, defineEmit } from 'vue'
 import { useStore } from 'vuex'
-import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { uploadFoodPic } from '@/api/upload'
-import { getHasShop } from '@/api/restaurant'
+import { addFood } from '@/api/food'
 import config from '@/config'
-const route = useRoute()
 const store = useStore()
 const restaurant_id = store.state.restaurant.shopInfo.id
 const ruleFormRef = ref()
-const hasShop = ref(false)
 const shop_avatar = ref(true) // 验证是否上传了图片
 const dialogVisible = ref(false)
 const ruleForm = reactive({
@@ -146,13 +140,8 @@ const rules = reactive({
     },
   ],
 })
-// 获取是否已有店铺
-getHasShop().then(res => {
-  if (res.data) {
-    hasShop.value = true
-  }
-})
 
+const emit = defineEmit(['addComplete'])
 // 通过dialog显示图片
 function handlePictureCardPreview() {
   dialogVisible.value = true
@@ -180,7 +169,16 @@ const submitForm = formEl => {
   formEl.validate(valid => {
     if (valid) {
       console.log('submit!', ruleForm)
-      store.dispatch('food/addFood', ruleForm)
+      addFood(ruleForm)
+        .then(data => {
+          console.log(data)
+          if (data.status === 200) {
+            emit('addComplete')
+          }
+        })
+        .catch(e => {
+          console.log(e)
+        })
     } else {
       console.log('error submit!')
       return false
@@ -196,7 +194,6 @@ const resetForm = formEl => {
 
 <style lang="scss" scoped>
 .addFood {
-  width: 50%;
   margin: 0 auto;
   h2 {
     font-size: 22px;

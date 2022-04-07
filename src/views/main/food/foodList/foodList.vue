@@ -6,7 +6,9 @@
           <el-input v-model="search" placeholder="请输入名称搜索" />
         </el-form-item>
         <el-form-item>
-          <el-button>添加食品</el-button>
+          <el-button @click="showAddDialog = true" type="success">
+            添加食品
+          </el-button>
         </el-form-item>
       </el-form>
       <el-table
@@ -79,11 +81,16 @@
     <el-dialog title="更改食品信息" v-model="showDialog" width="40%" center>
       <edit-form :editFood="editFood" :foodId="foodId"></edit-form>
     </el-dialog>
+
+    <el-dialog title="添加食品" v-model="showAddDialog" width="40%" center>
+      <add-food @addComplete="addComplete"></add-food>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import editForm from './editForm.vue'
+import addFood from './addFood.vue'
 import { getFoods } from '@/api/food'
 import {
   defineComponent,
@@ -97,7 +104,7 @@ import {
 import { useStore } from 'vuex'
 
 export default defineComponent({
-  components: { editForm },
+  components: { editForm, addFood },
   setup() {
     const { proxy: ctx } = getCurrentInstance()
     const store = useStore()
@@ -106,6 +113,7 @@ export default defineComponent({
       foodList: [],
       hasShop: false,
       showDialog: false,
+      showAddDialog: false,
       foodId: 0,
       search: '',
       editFood: {},
@@ -164,6 +172,10 @@ export default defineComponent({
           .catch(() => {
             return
           })
+      },
+      addComplete() {
+        state.showAddDialog = false
+        state.getFoods()
       },
     })
     state.getFoods() //获取食品数据
