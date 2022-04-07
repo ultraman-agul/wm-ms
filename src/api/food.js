@@ -15,3 +15,11 @@ export const getFoods = data => {
   }
   return _get(req)
 }
+
+export const setFood = data => {
+  const req = {
+    url: 'v1/setFood',
+    data,
+  }
+  return _post(req)
+}

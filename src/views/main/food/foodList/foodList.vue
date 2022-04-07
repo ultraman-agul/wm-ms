@@ -50,7 +50,7 @@
 
         <el-table-column type="index" label="序号" width="60"></el-table-column>
         <el-table-column prop="name" label="名称"></el-table-column>
-        <el-table-column prop="food_classify" label="分类"></el-table-column>
+        <el-table-column prop="category" label="分类"></el-table-column>
         <el-table-column prop="price" label="价格"></el-table-column>
         <el-table-column prop="month_saled" label="月售"></el-table-column>
         <el-table-column
@@ -76,16 +76,14 @@
     </div>
     <div v-else>没有注册店铺, 所以没有食品信息</div>
 
-    <el-dialog
-      title="更改食品信息"
-      v-model="showDialog"
-      width="40%"
-      center
-    ></el-dialog>
+    <el-dialog title="更改食品信息" v-model="showDialog" width="40%" center>
+      <edit-form :editFood="editFood" :foodId="foodId"></edit-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import editForm from './editForm.vue'
 import { getFoods } from '@/api/food'
 import {
   defineComponent,
@@ -94,24 +92,26 @@ import {
   getCurrentInstance,
   ref,
   computed,
+  watch,
 } from 'vue'
 import { useStore } from 'vuex'
 
 export default defineComponent({
-  //   components: { detailForm },
+  components: { editForm },
   setup() {
     const { proxy: ctx } = getCurrentInstance()
     const store = useStore()
     const shopInfo = computed(() => store.state.restaurant.shopInfo)
-
     const state = reactive({
       foodList: [],
       hasShop: false,
       showDialog: false,
-      foodId: '',
+      foodId: 0,
       search: '',
-      // 获取食品信息
+      editFood: {},
+
       getFoods() {
+        // 获取食品信息
         state.hasShop = !!shopInfo.value.id
         if (state.hasShop) {
           getFoods({ restaurant_id: shopInfo.value.id }).then(res => {
@@ -119,7 +119,7 @@ export default defineComponent({
               state.foodList = []
               res.data.forEach(item => {
                 item.spus.forEach(subItem => {
-                  subItem.food_classify = item.name
+                  subItem.category = item.name
                   subItem.price = subItem.skus[0].price
                   subItem.description = subItem.skus[0].description
                   state.foodList.push(subItem)
@@ -137,6 +137,7 @@ export default defineComponent({
       },
       handleEdit(index, row) {
         state.foodId = row.id
+        state.editFood = row
         state.showDialog = !state.showDialog
       },
       // 删除食品信息
@@ -166,6 +167,7 @@ export default defineComponent({
       },
     })
     state.getFoods() //获取食品数据
+    // 表格筛选
     const filterTableData = computed(() =>
       state.foodList.filter(
         data =>
@@ -173,9 +175,21 @@ export default defineComponent({
           data.name.toLowerCase().includes(state.search.toLowerCase())
       )
     )
+    store.dispatch('restaurant/getCategoryFn', shopInfo.value.id) // 获取餐厅的所有分类
+    const categoryList = computed(() => store.state.restaurant.category)
+
+    watch(
+      () => state.showDialog,
+      val => {
+        if (!val) {
+          state.getFoods()
+        }
+      }
+    )
     return {
       ...toRefs(state),
       filterTableData,
+      categoryList,
     }
   },
 })
