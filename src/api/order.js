@@ -23,3 +23,11 @@ export const getOrderByRestaurantId = data => {
   }
   return _get(req)
 }
+
+export const getTodayOrderByRestaurantId = data => {
+  const req = {
+    url: '/v1/getTodayOrderByRestaurantId',
+    data,
+  }
+  return _get(req)
+}
