@@ -91,7 +91,7 @@
 <script>
 import editForm from './editForm.vue'
 import addFood from './addFood.vue'
-import { getFoods } from '@/api/food'
+import { getFoods, deleteFood } from '@/api/food'
 import {
   defineComponent,
   reactive,
@@ -157,17 +157,20 @@ export default defineComponent({
             type: 'warning',
           })
           .then(() => {
-            state.$api.foodApis
-              .deleteFood({ data: { food_id: row.id } })
-              .then(res => {
-                if (res.code == 200) {
-                  ctx.$message({
-                    type: 'success',
-                    message: res.message,
-                  })
-                  location.reload()
-                }
-              })
+            deleteFood({ id: row.id }).then(res => {
+              if (res.status == 200) {
+                ctx.$message({
+                  type: 'success',
+                  message: res.message,
+                })
+                state.getFoods()
+              } else {
+                ctx.$message({
+                  type: 'error',
+                  message: res.message,
+                })
+              }
+            })
           })
           .catch(() => {
             return

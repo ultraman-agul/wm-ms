@@ -23,3 +23,11 @@ export const setFood = data => {
   }
   return _post(req)
 }
+
+export const deleteFood = data => {
+  const req = {
+    url: 'v1/deleteFood',
+    data,
+  }
+  return _get(req)
+}

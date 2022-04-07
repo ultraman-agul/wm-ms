@@ -174,6 +174,7 @@ const submitForm = formEl => {
           console.log(data)
           if (data.status === 200) {
             emit('addComplete')
+            ElMessage.success('添加食品成功')
           }
         })
         .catch(e => {
