@@ -31,3 +31,11 @@ export const getTodayOrderByRestaurantId = data => {
   }
   return _get(req)
 }
+
+export const orderGroupByDay = data => {
+  const req = {
+    url: '/v1/orderGroupByDay',
+    data,
+  }
+  return _get(req)
+}

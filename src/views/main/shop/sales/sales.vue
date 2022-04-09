@@ -2,15 +2,27 @@
   <div class="bill">
     <el-row :gutter="20">
       <el-col :span="24">
-        <el-card title="店铺食品销量">
+        <el-card>
           <my-chart
             :option="soldOption"
+            name="sold"
             v-if="soldOption.series[0].name"
           ></my-chart>
         </el-card>
       </el-col>
     </el-row>
     <el-row :gutter="20">
+      <el-col :span="24">
+        <el-card>
+          <my-chart
+            :option="orderOption"
+            name="order"
+            v-if="orderOption.series[0].name"
+          ></my-chart>
+        </el-card>
+      </el-col>
+    </el-row>
+    <!-- <el-row :gutter="20">
       <el-col :span="8">
         <el-card title="店铺账单">
           <my-chart
@@ -29,55 +41,71 @@
           ></my-chart>
         </el-card>
       </el-col>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 
 <script>
 import MyChart from '@/components/MyChart/index.vue'
-import { defineComponent, reactive } from 'vue'
-import { soldOption, billOption, mapOption } from './chartHelper'
+import {
+  defineComponent,
+  reactive,
+  computed,
+  getCurrentInstance,
+  toRefs,
+} from 'vue'
+import { soldOption, orderOption, mapOption } from './chartHelper'
+import { getFoods } from '@/api/food'
+import { orderGroupByDay } from '@/api/order'
+import { useStore } from 'vuex'
+
 export default defineComponent({
   components: { MyChart },
   setup() {
+    const store = useStore()
+    const { proxy: ctx } = getCurrentInstance()
+    const restaurant_id = computed(() => store.state.restaurant.shopInfo.id)
     const state = reactive({
       soldOption,
-      billOption,
+      orderOption,
       mapOption,
       // 获取店铺销售数量
       getSold() {
-        state.$api.shopApis.getSold().then(res => {
-          if (res.code == 200) {
+        getFoods({ restaurant_id: restaurant_id.value }).then(res => {
+          if (res.status == 200) {
             let xAxisData = [],
               seriesData = [],
               seriesName = '已售'
-            for (let item of res.data) {
-              xAxisData.push(item.name)
-              seriesData.push(item.sold)
-            }
+            res.data.forEach(item => {
+              for (let subItem of item.spus) {
+                xAxisData.push(subItem.name)
+                seriesData.push(subItem.month_saled)
+              }
+            })
             state.soldOption.xAxis[0].data = xAxisData
             state.soldOption.series[0].data = seriesData
             state.soldOption.series[0].name = seriesName
           } else {
-            state.$message({ type: 'error', message: res.message })
+            ctx.$message({ type: 'error', message: res.message })
           }
         })
       },
-      // 获取店铺流水
-      getBill() {
-        state.$api.shopApis.getBill().then(res => {
-          if (res.code == 200) {
-            const seriesData = []
-            const data = res.data[0]
-            for (let i of Object.keys(data)) {
-              const temp = {}
-              temp.value = data[i]
-              temp.name = i
-              seriesData.push(temp)
-            }
-            state.billOption.series[0].data = seriesData
+      // 获取每日订单数量
+      getOrderByDay() {
+        orderGroupByDay({ restaurant_id: restaurant_id.value }).then(res => {
+          if (res.status == 200) {
+            let xAxisData = [],
+              seriesData = [],
+              seriesName = '订单数量'
+            res.data.forEach(item => {
+              xAxisData.push(item._id)
+              seriesData.push(item.number)
+            })
+            state.orderOption.xAxis[0].data = xAxisData
+            state.orderOption.series[0].data = seriesData
+            state.orderOption.series[0].name = seriesName
           } else {
-            state.$message({ type: 'error', message: res.message })
+            ctx.$message({ type: 'error', message: res.message })
           }
         })
       },
@@ -93,9 +121,13 @@ export default defineComponent({
         })
       },
     })
-    // state.getSold()
+    state.getSold()
+    state.getOrderByDay()
     // state.getBill()
     // state.getMapData()
+    return {
+      ...toRefs(state),
+    }
   },
 })
 </script>

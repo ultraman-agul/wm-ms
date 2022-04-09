@@ -1,5 +1,10 @@
 // 食品销售数
 export const soldOption = {
+  title: {
+    text: `${new Date().getFullYear() +
+      '-' +
+      new Date().getMonth()}月食品销售明细`,
+  },
   tooltip: {
     trigger: 'axis',
     axisPointer: {
@@ -24,13 +29,59 @@ export const soldOption = {
   yAxis: [
     {
       type: 'value',
+      name: '份',
     },
   ],
   series: [
     {
       name: '',
       type: 'bar',
-      barWidth: '60%',
+      barWidth: '40',
+      data: [],
+      itemStyle: {
+        borderRadius: [5, 5, 0, 0],
+      },
+    },
+  ],
+}
+
+// 每日订单数量
+export const orderOption = {
+  title: {
+    text: `每日订单统计`,
+  },
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'shadow',
+    },
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '3%',
+    containLabel: true,
+  },
+  xAxis: [
+    {
+      type: 'category',
+      data: [],
+      axisTick: {
+        alignWithLabel: true,
+      },
+    },
+  ],
+  yAxis: [
+    {
+      type: 'value',
+      name: '个',
+    },
+  ],
+  series: [
+    {
+      name: '',
+      type: 'line',
+      smooth: true,
       data: [],
     },
   ],

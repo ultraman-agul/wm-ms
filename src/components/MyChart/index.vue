@@ -2,7 +2,7 @@
   <div class="base-echarts">
     <div
       class="echarts-wrap"
-      ref="baseEcharts"
+      :id="name"
       :style="{ width: width, height: height }"
     ></div>
   </div>
@@ -11,7 +11,7 @@
 <script>
 import * as echarts from 'echarts'
 import ChinaMapData from './data/china.json'
-import { defineComponent } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 export default defineComponent({
   props: {
     width: {
@@ -31,14 +31,20 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    name: {
+      type: String,
+      default: 'myChart',
+    },
   },
-  setup() {
+  setup(props) {
     function initEcharts() {
-      if (this.showMap) {
+      if (props.showMap) {
         echarts.registerMap('china', ChinaMapData)
       }
-      let echartsInstance = echarts.init(this.$refs.baseEcharts)
-      echartsInstance.setOption(this.option)
+      onMounted(() => {
+        let echartsInstance = echarts.init(document.getElementById(props.name))
+        echartsInstance.setOption(props.option)
+      })
     }
     initEcharts()
   },

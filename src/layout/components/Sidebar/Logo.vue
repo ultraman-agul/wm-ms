@@ -1,7 +1,7 @@
 <template>
   <div class="brand">
-    <img class="logo" src="~@/assets/logo.svg" @click="goHome" />
-    <div class="title">AGUL外卖后台管理系统</div>
+    <!-- <img class="logo" src="~@/assets/logo.svg" @click="goHome" /> -->
+    <div class="title" @click="goHome">AGUL外卖后台管理系统</div>
   </div>
 </template>
 <script>
