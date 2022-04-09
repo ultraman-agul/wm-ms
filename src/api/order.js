@@ -39,3 +39,10 @@ export const orderGroupByDay = data => {
   }
   return _get(req)
 }
+
+export const getCounts = () => {
+  const req = {
+    url: '/v1/getCounts',
+  }
+  return _get(req)
+}
