@@ -39,6 +39,9 @@ export const soldOption = {
       type: 'bar',
       barWidth: '40',
       data: [],
+      label: {
+        show: true,
+      },
       itemStyle: {
         borderRadius: [5, 5, 0, 0],
       },
@@ -85,6 +88,9 @@ export const orderOption = {
       type: 'line',
       smooth: true,
       data: [],
+      label: {
+        show: true,
+      },
     },
   ],
 }

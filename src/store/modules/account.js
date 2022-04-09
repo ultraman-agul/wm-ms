@@ -24,6 +24,9 @@ export default {
     // 获取用户信息
     async getUserinfo({ commit }) {
       const { status: code, data } = await userInfo()
+      data.avatar =
+        data.avatar.indexOf('default') > -1 ? '/assets/avatar.png' : data.avatar
+      console.log()
       if (+code === 200) {
         commit('setUserinfo', data)
         if (data.status === 2) {
