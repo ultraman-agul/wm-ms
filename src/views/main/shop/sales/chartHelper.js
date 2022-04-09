@@ -4,6 +4,7 @@ export const soldOption = {
     text: `${new Date().getFullYear() +
       '-' +
       new Date().getMonth()}月食品销售明细`,
+    left: 'center',
   },
   tooltip: {
     trigger: 'axis',
@@ -49,6 +50,7 @@ export const soldOption = {
 export const orderOption = {
   title: {
     text: `每日订单统计`,
+    left: 'center',
   },
   tooltip: {
     trigger: 'axis',

@@ -44,3 +44,11 @@ export const allUserInfo = () => {
   }
   return _get(req)
 }
+
+export const getAddress = data => {
+  const req = {
+    url: 'address/getAddress',
+    data,
+  }
+  return _get(req)
+}
