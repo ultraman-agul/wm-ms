@@ -14,6 +14,29 @@
             sortable
             width="80"
           ></el-table-column>
+          <el-table-column label="食品信息">
+            <template #default="scope">
+              <el-popover trigger="hover" placement="top" width="400">
+                <div
+                  v-for="(info, index) in scope.row.foods"
+                  :key="index"
+                  class="hoverbox"
+                >
+                  <div>
+                    <p>名称: {{ info.name }}</p>
+                    <p>数量: {{ info.num }}</p>
+                    <p>价格: {{ info.price }}</p>
+                  </div>
+                  <img :src="info.pic_url" alt="" />
+                </div>
+                <template #reference class="name-wrapper">
+                  <el-button type="success" plain size="medium">
+                    查看食品信息
+                  </el-button>
+                </template>
+              </el-popover>
+            </template>
+          </el-table-column>
           <el-table-column
             prop="comment_time"
             label="评论时间"
@@ -132,9 +155,10 @@ export default defineComponent({
           limit: state.pageSize,
         }).then(res => {
           if (res.status === 200) {
-            state.tableData = res.data.map(item => {
+            state.tableData = res.data.map((item, index) => {
               return {
                 ...item,
+                foods: res.foodData[index],
                 comment_time: moment(item.comment_time).format(
                   'YYYY-MM-DD HH:mm:ss'
                 ),
@@ -196,6 +220,20 @@ export default defineComponent({
   .btnBox {
     margin-top: 4px;
     text-align: right;
+  }
+}
+
+.hoverbox {
+  border-bottom: 1px solid #f4f4f4;
+  display: flex;
+  justify-content: space-between;
+  div {
+    p {
+      margin: 0 0;
+    }
+  }
+  img {
+    width: 100px;
   }
 }
 </style>
