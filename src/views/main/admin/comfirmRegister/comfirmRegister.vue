@@ -1,7 +1,7 @@
 <template>
   <div class="main-content food-list">
     <el-tabs type="border-card">
-      <el-tab-pane label="店铺列表">
+      <el-tab-pane label="注册申请">
         <el-table
           :data="filterTableData"
           stripe
@@ -9,116 +9,43 @@
           :header-cell-style="{ 'text-align': 'center' }"
           :cell-style="{ 'text-align': 'center' }"
           style="width: 100%"
-          @expand-change="expandCategory"
-          :row-key="getRowKeys"
-          :expand-row-keys="state.expands"
         >
-          <el-table-column type="expand">
-            <template #default="props">
-              <div class="category">
-                <span>食品分类:</span>
-                <el-tag
-                  v-for="tag in category"
-                  :key="tag.id"
-                  class="mx-1"
-                  closable
-                  :disable-transitions="false"
-                  @close="handleClose(tag)"
-                >
-                  {{ tag.name }}
-                </el-tag>
-                <el-input
-                  v-if="inputVisible"
-                  ref="InputRef"
-                  v-model="inputValue"
-                  class="ml-1 w-20"
-                  size="small"
-                  @keyup.enter="handleInputConfirm"
-                  @blur="handleInputConfirm"
-                ></el-input>
-                <el-button
-                  v-else
-                  class="button-new-tag ml-1"
-                  size="small"
-                  @click="showInput"
-                >
-                  + 添加分类
-                </el-button>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column align="center" label="id" prop="id" width="60" />
-          <el-table-column align="center" label="名称" prop="name" />
-          <el-table-column align="center" label="地址" prop="address" />
-          <el-table-column align="center" label="联系电话" prop="call_center" />
-          <el-table-column align="center" label="开铺日期">
+          <el-table-column label="id" prop="id" width="60" />
+          <el-table-column label="名称" prop="name" />
+          <el-table-column label="地址" prop="address" />
+          <el-table-column label="联系电话" prop="call_center" />
+          <el-table-column label="开铺日期">
             <template #default="scope">
               {{ scope.row.created_at.slice(0, 10) }}
             </template>
           </el-table-column>
           <el-table-column
-            align="center"
-            label="评论数"
-            prop="comment_number"
-          ></el-table-column>
-          <el-table-column
-            align="center"
-            label="月销"
-            width="100"
-            prop="month_sales"
-          ></el-table-column>
-          <el-table-column
-            align="center"
             label="起送"
             width="100"
             prop="min_price"
           ></el-table-column>
           <el-table-column
-            align="center"
             label="配送费"
             width="100"
             prop="shipping_fee"
           ></el-table-column>
-          <el-table-column align="center" label="评分">
-            <el-table-column
-              align="center"
-              label="店铺"
-              width="60"
-              prop="wm_poi_score"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              label="食品"
-              width="60"
-              prop="food_score"
-            ></el-table-column>
-            <el-table-column
-              align="center"
-              label="配送"
-              width="60"
-              prop="delivery_score"
-            ></el-table-column>
-          </el-table-column>
-          <el-table-column align="center" width="300">
+          <el-table-column width="300">
             <template #header>
               <el-input v-model="search" size="small" placeholder="搜索" />
             </template>
             <template #default="scope">
-              <el-button size="small" @click="jumpToFood(scope.row.id)">
-                食品详情
-              </el-button>
               <el-button
                 size="small"
                 @click="handleEdit(scope.$index, scope.row)"
               >
-                编辑
+                同意注册
               </el-button>
               <el-button
                 size="small"
                 type="danger"
                 @click="handleDelete(scope.$index, scope.row)"
               >
-                删除
+                拒绝
               </el-button>
             </template>
           </el-table-column>
@@ -129,9 +56,8 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive, nextTick, getCurrentInstance } from 'vue'
+import { ref, computed, reactive, nextTick } from 'vue'
 import router from '@/router'
-import { deleteShop } from '@/api/restaurant'
 import { useStore } from 'vuex'
 const store = useStore()
 const inputValue = ref('')
@@ -141,7 +67,7 @@ const search = ref('')
 const state = reactive({
   expands: [], // 存储展开行的餐馆id
 })
-const { proxy: ctx } = getCurrentInstance()
+
 const category = computed(() => store.state.restaurant.category) // 展开行的餐厅的分类数据
 const tableData = computed(() => store.state.restaurant.restaurantList) // 表格餐厅列表数据
 // 给每行一个key,expend必需
@@ -198,33 +124,13 @@ const filterTableData = computed(() =>
 )
 
 const handleEdit = (index, row) => {
+  console.log(index, row)
+  // store.commit('restaurant/setShopInfo', row)
   router.push('/main/restaurantInfo?id=' + row.id)
 }
 
 const handleDelete = (index, row) => {
-  ctx
-    .$confirm('确认删除?', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    })
-    .then(() => {
-      deleteShop({ id: row.id })
-        .then(res => {
-          if (res.status === 200) {
-            ctx.$message({
-              type: 'success',
-              message: res.message,
-            })
-          }
-        })
-        .catch(e => {
-          ctx.$message({
-            type: 'error',
-            message: e,
-          })
-        })
-    })
+  console.log(index, row)
 }
 
 // 跳转到食品详情

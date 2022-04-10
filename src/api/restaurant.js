@@ -93,6 +93,14 @@ export const updateShop = data => {
   return _post(req)
 }
 
+export const deleteShop = data => {
+  const req = {
+    url: 'v1/deleteShop',
+    data,
+  }
+  return _get(req)
+}
+
 export const restaurantComment = data => {
   const req = {
     url: '/v1/restaurantComment',

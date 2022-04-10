@@ -3,7 +3,8 @@ const User = () => import('@/views/main/admin/user/user.vue')
 const Restaurant = () => import('@/views/main/admin/restaurant/restaurant.vue')
 const RestaurantInfo = () => import('@/views/main/admin/restaurant/info.vue')
 const Food = () => import('@/views/main/admin/food/foodList.vue')
-const AddFood = () => import('@/views/main/admin/AddFood.vue')
+const ComfirmRegister = () =>
+  import('@/views/main/admin/comfirmRegister/comfirmRegister.vue')
 const Order = () => import('@/views/main/admin/Order.vue')
 export default [
   {
@@ -40,6 +41,14 @@ export default [
         component: Restaurant,
         meta: {
           title: '店铺管理',
+        },
+      },
+      {
+        path: 'comfirmRegister',
+        name: 'comfirmRegister',
+        component: ComfirmRegister,
+        meta: {
+          title: '注册申请',
         },
       },
       {
