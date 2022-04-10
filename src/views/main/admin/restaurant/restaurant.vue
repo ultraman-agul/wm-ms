@@ -185,6 +185,8 @@ const filterTableData = computed(() =>
 
 const handleEdit = (index, row) => {
   console.log(index, row)
+  // store.commit('restaurant/setShopInfo', row)
+  router.push('/main/restaurantInfo?id=' + row.id)
 }
 
 const handleDelete = (index, row) => {

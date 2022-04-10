@@ -69,9 +69,10 @@ export const createShop = data => {
   return _post(req)
 }
 
-export const getShopInfo = () => {
+export const getShopInfo = data => {
   const req = {
     url: 'v1/getShopInfo',
+    data,
   }
   return _get(req)
 }

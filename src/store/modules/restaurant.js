@@ -82,16 +82,28 @@ export default {
       })
     },
 
-    getShopInfo({ commit }) {
-      getShopInfo()
-        .then(res => {
-          if (res.status === 200) {
-            commit('setShopInfo', res.data)
-          }
-        })
-        .catch(e => {
-          console.log(e)
-        })
+    getShopInfo({ commit }, data) {
+      if (data && data.restaurant_id) {
+        getShopInfo({ restaurant_id: data.restaurant_id })
+          .then(res => {
+            if (res.status === 200) {
+              commit('setShopInfo', res.data)
+            }
+          })
+          .catch(e => {
+            console.log(e)
+          })
+      } else {
+        getShopInfo()
+          .then(res => {
+            if (res.status === 200) {
+              commit('setShopInfo', res.data)
+            }
+          })
+          .catch(e => {
+            console.log(e)
+          })
+      }
     },
   },
 }

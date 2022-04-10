@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <el-row :gutter="20" class="topRow">
+    <el-row :gutter="20" class="topRow" v-if="!restaurant">
       <el-col :span="8">
         <el-card>
           <div>用户数量</div>
@@ -52,7 +52,6 @@ export default defineComponent({
   name: 'home',
   setup() {
     const store = useStore()
-
     const restaurant = computed(() => store.state.restaurant.shopInfo)
     const restaurant_id = computed(() => store.state.restaurant.shopInfo.id)
     const centerPosition = computed(() => {
@@ -211,6 +210,7 @@ export default defineComponent({
     }
     return {
       ...toRefs(state),
+      restaurant,
     }
   },
 })

@@ -1,6 +1,7 @@
 const Layout = () => import('@/layout/index.vue')
 const User = () => import('@/views/main/admin/user/user.vue')
-const Restaurant = () => import('@/views/main/admin/Restaurant.vue')
+const Restaurant = () => import('@/views/main/admin/restaurant/restaurant.vue')
+const RestaurantInfo = () => import('@/views/main/admin/restaurant/info.vue')
 const Food = () => import('@/views/main/admin/Food.vue')
 const AddFood = () => import('@/views/main/admin/AddFood.vue')
 const Order = () => import('@/views/main/admin/Order.vue')
@@ -27,18 +28,27 @@ export default [
   {
     path: '/main',
     component: Layout,
-    name: 'main',
+    name: 'main6',
     meta: {
-      title: '数据管理',
+      title: '店铺管理',
     },
-    icon: 'el-icon-s-data',
+    icon: 'el-icon-s-shop',
     children: [
       {
         path: 'restaurant',
-        name: 'Restaurant',
+        name: 'restaurant',
         component: Restaurant,
         meta: {
-          title: '餐厅管理',
+          title: '店铺管理',
+        },
+      },
+      {
+        path: 'restaurantInfo',
+        name: 'restaurantInfo',
+        component: RestaurantInfo,
+        hidden: true,
+        meta: {
+          title: '店铺详情',
         },
       },
     ],
@@ -46,7 +56,7 @@ export default [
   {
     path: '/main',
     component: Layout,
-    name: 'main6',
+    name: 'main7',
     meta: {
       title: '数据管理',
     },
@@ -75,7 +85,7 @@ export default [
   {
     path: '/main',
     component: Layout,
-    name: 'main7',
+    name: 'main8',
     meta: {
       title: '数据管理',
     },
