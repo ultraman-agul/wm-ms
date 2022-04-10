@@ -16,6 +16,14 @@ export const addUser = data => {
   return _post(req)
 }
 
+export const editUserInfo = data => {
+  const req = {
+    url: 'admin/editUser',
+    data,
+  }
+  return _post(req)
+}
+
 export const getAllAddress = () => {
   const req = {
     url: 'admin/get_all_address',

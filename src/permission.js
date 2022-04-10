@@ -55,7 +55,6 @@ router.beforeEach(async to => {
       return to.fullPath
     }
 
-    console.log(store.state.menu.menus.length)
     // 生成菜单（如果你的项目有动态菜单，在此处会添加动态路由）
     if (store.state.menu.menus.length <= 0) {
       const loadingInstance = ElLoading.service({

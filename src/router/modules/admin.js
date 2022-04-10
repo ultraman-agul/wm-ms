@@ -1,5 +1,5 @@
 const Layout = () => import('@/layout/index.vue')
-const User = () => import('@/views/main/admin/User.vue')
+const User = () => import('@/views/main/admin/user/user.vue')
 const Restaurant = () => import('@/views/main/admin/Restaurant.vue')
 const Food = () => import('@/views/main/admin/Food.vue')
 const AddFood = () => import('@/views/main/admin/AddFood.vue')
@@ -8,14 +8,14 @@ export default [
   {
     path: '/main',
     component: Layout,
-    name: 'main',
+    name: 'main5',
     meta: {
-      title: '数据管理',
+      title: '用户管理',
     },
     icon: 'el-icon-s-data',
     children: [
       {
-        path: '',
+        path: 'user',
         name: 'user',
         component: User,
         meta: {
@@ -46,7 +46,7 @@ export default [
   {
     path: '/main',
     component: Layout,
-    name: 'main',
+    name: 'main6',
     meta: {
       title: '数据管理',
     },
@@ -75,7 +75,7 @@ export default [
   {
     path: '/main',
     component: Layout,
-    name: 'main',
+    name: 'main7',
     meta: {
       title: '数据管理',
     },
