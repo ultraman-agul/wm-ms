@@ -24,6 +24,14 @@ export const editUserInfo = data => {
   return _post(req)
 }
 
+export const deleteUser = data => {
+  const req = {
+    url: 'admin/deleteUser',
+    data,
+  }
+  return _get(req)
+}
+
 export const getAllAddress = () => {
   const req = {
     url: 'admin/get_all_address',

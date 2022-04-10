@@ -95,8 +95,7 @@
 <script>
 import editForm from './editForm.vue'
 import addUser from './addUser.vue'
-import { deleteFood } from '@/api/food'
-import { allUserInfo } from '@/api/user'
+import { allUserInfo, deleteUser } from '@/api/user'
 
 import {
   defineComponent,
@@ -162,13 +161,13 @@ export default defineComponent({
       // 删除食品信息
       handleDelete(index, row) {
         ctx.$messageBox
-          .confirm('此操作将永久删除食品, 是否继续?', '提示', {
+          .confirm('此操作将永久删除用户, 是否继续?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning',
           })
           .then(() => {
-            deleteFood({ id: row.id }).then(res => {
+            deleteUser({ id: row.id }).then(res => {
               if (res.status == 200) {
                 ctx.$message({
                   type: 'success',
