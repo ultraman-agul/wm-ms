@@ -2,7 +2,7 @@ const Layout = () => import('@/layout/index.vue')
 const User = () => import('@/views/main/admin/user/user.vue')
 const Restaurant = () => import('@/views/main/admin/restaurant/restaurant.vue')
 const RestaurantInfo = () => import('@/views/main/admin/restaurant/info.vue')
-const Food = () => import('@/views/main/admin/Food.vue')
+const Food = () => import('@/views/main/admin/food/foodList.vue')
 const AddFood = () => import('@/views/main/admin/AddFood.vue')
 const Order = () => import('@/views/main/admin/Order.vue')
 export default [
@@ -48,37 +48,17 @@ export default [
         component: RestaurantInfo,
         hidden: true,
         meta: {
-          title: '店铺详情',
+          title: '店铺信息',
         },
       },
-    ],
-  },
-  {
-    path: '/main',
-    component: Layout,
-    name: 'main7',
-    meta: {
-      title: '数据管理',
-    },
-    icon: 'el-icon-s-data',
-    children: [
       {
         path: 'food',
-        name: 'Food',
+        name: 'food',
         component: Food,
+        hidden: true,
         meta: {
-          title: '食品列表',
+          title: '食品信息',
         },
-        // hidden: true, // 不在菜单中显示
-      },
-      {
-        path: 'addFood',
-        name: 'addFood',
-        component: AddFood,
-        meta: {
-          title: '添加食品',
-        },
-        hidden: true, // 不在菜单中显示
       },
     ],
   },
