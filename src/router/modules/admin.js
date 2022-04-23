@@ -5,7 +5,7 @@ const RestaurantInfo = () => import('@/views/main/admin/restaurant/info.vue')
 const Food = () => import('@/views/main/admin/food/foodList.vue')
 const ComfirmRegister = () =>
   import('@/views/main/admin/comfirmRegister/comfirmRegister.vue')
-const Order = () => import('@/views/main/admin/Order.vue')
+const Order = () => import('@/views/main/admin/order/order.vue')
 export default [
   {
     path: '/main',
@@ -76,7 +76,7 @@ export default [
     component: Layout,
     name: 'main8',
     meta: {
-      title: '数据管理',
+      title: '订单管理',
     },
     icon: 'el-icon-s-data',
     children: [

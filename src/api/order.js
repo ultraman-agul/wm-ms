@@ -46,3 +46,19 @@ export const getCounts = () => {
   }
   return _get(req)
 }
+
+export const getAllOrder = data => {
+  const req = {
+    url: '/v1/getAllOrder',
+    data,
+  }
+  return _get(req)
+}
+
+export const getTodayOrder = data => {
+  const req = {
+    url: '/v1/getTodayOrder',
+    data,
+  }
+  return _get(req)
+}

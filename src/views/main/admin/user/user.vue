@@ -1,7 +1,7 @@
 <template>
   <div class="main-content food-list">
     <el-tabs type="border-card">
-      <el-tab-pane label="食品列表">
+      <el-tab-pane label="用户列表">
         <div class="food-table">
           <el-form inline>
             <el-form-item>
